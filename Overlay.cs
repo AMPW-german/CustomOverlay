@@ -19,7 +19,6 @@ namespace CustomOverlay
         public List<circle> Circles;
         public List<rectangle> Rectangles;
 
-        private TextMeshProUGUI[] tmpText;
         private Camera uiCamera;
 
         public static Overlay instance;
@@ -29,11 +28,16 @@ namespace CustomOverlay
         circleGauge throttleGauge;
         circleGauge speedGauge;
         circleGauge machGauge;
+        circleGauge gGauge;
 
         private void OnEnable()
         {
-            GameEvents.VesselSituation.onReachSpace.Add(onSpaceReached);
             assetBundle = AssetBundle.LoadFromFile($"{KSPUtil.ApplicationRootPath}GameData/CustomOverlay/OverlayShader-windows.unity3d");
+
+            instance = this;
+
+            overlaySize = new Vector2(3440, 256);
+            renderTexture = new RenderTexture((int)overlaySize.x, (int)overlaySize.y, 32);
         }
 
         void Start()
@@ -68,10 +72,6 @@ namespace CustomOverlay
 
         public void reload()
         {
-            instance = this;
-
-            overlaySize = new Vector2(3440, 256);
-
             Shader[] shaders = assetBundle.LoadAllAssets<Shader>();
             foreach (Shader shader in shaders)
             {
@@ -95,7 +95,6 @@ namespace CustomOverlay
             gaugeMaterial = new Material(gaugeShader);
             gaugeMaterial.SetFloat("_AspectRatio", overlaySize.x / overlaySize.y);
 
-            renderTexture = new RenderTexture((int)overlaySize.x, (int)overlaySize.y, 32);
 
             GameObject camObj = new GameObject("UI Render Camera");
             uiCamera = camObj.AddComponent<Camera>();
@@ -122,10 +121,9 @@ namespace CustomOverlay
 
             speedGauge = new circleGauge("m/s", "Speed", 0, 320, 0, 1, new Vector2(0.05f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
             throttleGauge = new circleGauge("%", "Throttle", 0, 100, 0, 0, new Vector2(0.15f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
-            if (!spaceReached)
-            {
-                machGauge = new circleGauge("M", "Mach", 0, 3, 0, 3, new Vector2(0.25f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
-            }
+            machGauge = new circleGauge("M", "Mach", 0, 3, 0, 3, new Vector2(0.25f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
+            gGauge = new circleGauge("G", "G-Forces", 0, 5, 0, 3, new Vector2(0.95f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
+
             List<Vector4> vectorCircles = new List<Vector4> { };  // Each (x, y, radius, innerRadius)
             List<Vector4> circleFill = new List<Vector4> { }; // Each fill amount
             List<Vector4> colors = new List<Vector4> { };   // Each (r, g, b, alpha)
@@ -151,12 +149,6 @@ namespace CustomOverlay
             Graphics.Blit(null, renderTexture, gaugeMaterial);
 
             RenderTexture.active = null;
-        }
-
-        void onSpaceReached(Vessel vessel)
-        {
-            spaceReached = true;
-            reload();
         }
 
         public class circle
@@ -214,6 +206,8 @@ namespace CustomOverlay
             float current;
             int decimals;
 
+            public float Max { get { return max; } set { max = value; } }
+
             Vector2 position;
             Vector2 size;
             Vector4 color;
@@ -227,11 +221,78 @@ namespace CustomOverlay
             rectangle endcapLeft;
             rectangle endcapRight;
 
+            private bool disabled;
+
+            Vector2? innerCircleSave;
+            Vector2? outerCircleSave;
+            Vector2? endcapLeftSave;
+            Vector2? endcapRightSave;
+
             public void UpddateValue(float value)
             {
+                if (disabled) { return; }
                 current = value;
                 innerCircle.degree = Math.Min(current / max, 1) * 360;
                 valueTextMesh.text = $"{Math.Round(current, decimals)}{unitName}";
+            }
+
+            public void disable()
+            {
+                disabled = true;
+                valueTextMesh.text = "";
+                valueTextMesh.color = Color.clear;
+                descTextMesh.text = "";
+                descTextMesh.color = Color.clear;
+
+                innerCircleSave = innerCircle.size;
+                outerCircleSave = outerCircle.size;
+                endcapLeftSave = endcapLeft.size;
+                endcapRightSave = endcapRight.size;
+
+                innerCircle.size = new Vector2(0, 0);
+                innerCircle.color = Color.clear;
+                outerCircle.size = new Vector2(0, 0);
+                outerCircle.color = Color.clear;
+                endcapLeft.size = new Vector2(0, 0);
+                endcapLeft.color = Color.clear;
+                endcapRight.size = new Vector2(0, 0);
+                endcapRight.color = Color.clear;
+            }
+
+            public void enable()
+            {
+                disabled = false;
+
+                valueTextMesh.text = $"{Math.Round(current, decimals)}{unitName}";
+                descTextMesh.text = text;
+
+                valueTextMesh.color = color;
+                descTextMesh.color = color;
+                innerCircle.color = color;
+                outerCircle.color = color;
+                endcapLeft.color = color;
+                endcapRight.color = color;
+
+                if (innerCircleSave != null)
+                {
+                    innerCircle.size = (Vector2)innerCircleSave;
+                    innerCircleSave = null;
+                }
+                if (outerCircleSave != null)
+                {
+                    outerCircle.size = (Vector2)outerCircleSave;
+                    outerCircleSave = null;
+                }
+                if (endcapLeftSave != null)
+                {
+                    endcapLeft.size = (Vector2)endcapLeftSave;
+                    endcapLeftSave = null;
+                }
+                if (endcapRightSave != null)
+                {
+                    endcapRight.size = (Vector2)endcapRightSave;
+                    endcapRightSave = null;
+                }
             }
 
             public circleGauge(string unitName, string text, float min, float max, float current, int decimals, Vector2 position, Vector2 size, Vector4 color)
@@ -265,16 +326,26 @@ namespace CustomOverlay
 
         void Update()
         {
-            if (!UIMasterController.Instance.IsUIShowing)
-            {
                 speedGauge.UpddateValue((float)FlightGlobals.ActiveVessel.speed);
                 throttleGauge.UpddateValue(FlightGlobals.ActiveVessel.ctrlState.mainThrottle * 100);
-                if (!spaceReached)
+                machGauge.UpddateValue((float)FlightGlobals.ActiveVessel.mach);
+                gGauge.UpddateValue((float)FlightGlobals.ActiveVessel.geeForce);
+                gGauge.Max = Math.Max(gGauge.Max, (float)FlightGlobals.ActiveVessel.geeForce);
+
+            if (!UIMasterController.Instance.IsUIShowing)
+            {
+                if (!spaceReached && FlightGlobals.ActiveVessel.atmDensity == 0)
                 {
-                    machGauge.UpddateValue((float)FlightGlobals.ActiveVessel.mach);
+                    spaceReached = true;
+                    machGauge.disable();
+                }
+                else if (spaceReached && FlightGlobals.ActiveVessel.atmDensity > 0)
+                {
+                    spaceReached = false;
+                    machGauge.enable();
                 }
 
-                List<Vector4> vectorCircles = new List<Vector4> { };  // Each (x, y, radius, innerRadius)
+                List <Vector4> vectorCircles = new List<Vector4> { };  // Each (x, y, radius, innerRadius)
                 List<Vector4> circleFill = new List<Vector4> { }; // Each fill amount
                 List<Vector4> colors = new List<Vector4> { };   // Each (r, g, b, alpha)
 
@@ -346,9 +417,8 @@ namespace CustomOverlay
 
         private void OnDestroy()
         {
-            GameEvents.VesselSituation.onReachSpace.Remove(onSpaceReached);
             assetBundle.Unload(true);
-            
+
         }
     }
 }
