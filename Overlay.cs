@@ -1,4 +1,5 @@
 ﻿using KSP.UI;
+using KSPAlternateResourcePanel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace CustomOverlay
         private Vector2 overlaySize;
         public List<circle> Circles;
         public List<rectangle> Rectangles;
+        public List<barGauge> barGauges;
 
         private Camera uiCamera;
 
@@ -29,6 +31,9 @@ namespace CustomOverlay
         circleGauge speedGauge;
         circleGauge machGauge;
         circleGauge gGauge;
+        barGauge lfGauge;
+        barGauge oxGauge;
+
 
         private void OnEnable()
         {
@@ -118,11 +123,30 @@ namespace CustomOverlay
 
             Circles = new List<circle>();
             Rectangles = new List<rectangle>();
+            barGauges = new List<barGauge>();
 
-            speedGauge = new circleGauge("m/s", "Speed", 0, 320, 0, 1, new Vector2(0.05f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
-            throttleGauge = new circleGauge("%", "Throttle", 0, 100, 0, 0, new Vector2(0.15f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
-            machGauge = new circleGauge("M", "Mach", 0, 3, 0, 3, new Vector2(0.25f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
-            gGauge = new circleGauge("G", "G-Forces", 0, 5, 0, 3, new Vector2(0.95f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
+            lfGauge = new barGauge("LF", 0, new Vector2(0.2f, 0.15f), new Vector2(0.1f, 0.05f), new Vector4(0.35f, 0.35f, 0.35f, 1), new Vector4(1, 1, 1, 1), new Vector4(0.1f, 0.1f, 0.1f, 1f));
+            oxGauge = new barGauge("OX", 0, new Vector2(0.2f, 0.3f), new Vector2(0.1f, 0.05f), new Vector4(0.35f, 0.35f, 0.35f, 1), new Vector4(1, 1, 1, 1), new Vector4(0.1f, 0.1f, 0.1f, 1f));
+            barGauges.Add(lfGauge);
+            barGauges.Add(oxGauge);
+
+            //speedGauge = new circleGauge("m/s", "Speed", 0, 320, 0, 1, new Vector2(0.05f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
+            //throttleGauge = new circleGauge("%", "Throttle", 0, 100, 0, 0, new Vector2(0.15f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
+            //machGauge = new circleGauge("M", "Mach", 0, 3, 0, 3, new Vector2(0.25f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
+            //gGauge = new circleGauge("G", "G-Forces", 0, 5, 0, 3, new Vector2(0.95f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
+
+            // Superheavy engines
+            Vector2 midPoint = new Vector2(0.1f, 0.5f);
+            float circleSize = 0.1f;
+            float innerSize = 0.3f;
+            float middleSize = 0.5f;
+            float outerSize = 0.8f;
+
+            circleSymetrie(midPoint, innerSize, 0, 3).ForEach(v => Circles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
+            circleSymetrie(midPoint, middleSize, 0, 10).ForEach(v => Circles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
+            circleSymetrie(midPoint, outerSize, 9, 20).ForEach(v => Circles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
+
+
 
             List<Vector4> vectorCircles = new List<Vector4> { };  // Each (x, y, radius, innerRadius)
             List<Vector4> circleFill = new List<Vector4> { }; // Each fill amount
@@ -138,17 +162,82 @@ namespace CustomOverlay
             gaugeMaterial.SetInt("_CircleCount", vectorCircles.Count);
             if (vectorCircles.Count > 0)
             {
-                gaugeMaterial.SetVectorArray("_Circles", vectorCircles);
-                gaugeMaterial.SetVectorArray("_CircleFill", circleFill);
-                gaugeMaterial.SetVectorArray("_CircleColors", colors);
+                gaugeMaterial.SetVectorArray("_Circles", vectorCircles.ToArray());
+                gaugeMaterial.SetVectorArray("_CircleFill", circleFill.ToArray());
+                gaugeMaterial.SetVectorArray("_CircleColors", colors.ToArray());
+            }
+
+            List<Vector4> rectangles = new List<Vector4> { };
+            List<float> rectangleRotations = new List<float> { };
+            List<Vector4> rectangleColors = new List<Vector4> { };
+
+            foreach (rectangle rect in Rectangles)
+            {
+                rectangles.Add(new Vector4(rect.position.x, rect.position.y, rect.size.x, rect.size.y));
+                rectangleRotations.Add(rect.getRadians());
+                rectangleColors.Add(rect.color);
+            }
+
+            gaugeMaterial.SetInt("_RectangleCount", rectangles.Count);
+            if (rectangles.Count > 0)
+            {
+                gaugeMaterial.SetVectorArray("_Rectangles", rectangles.ToArray());
+                gaugeMaterial.SetFloatArray("_RectangleRotation", rectangleRotations.ToArray());
+                gaugeMaterial.SetVectorArray("_RectangleColors", rectangleColors.ToArray());
+            }
+
+
+            List<Vector4> barPositions = new List<Vector4> { };
+            List<float> barRounding = new List<float> { };
+            List<Vector4> barStartColor = new List<Vector4> { };
+            List<Vector4> barEndColor = new List<Vector4> { };
+
+            barGauges.ForEach(barGauge =>
+            {
+                Vector2 primaryPosition = barGauge.primaryPosition;
+                Vector2 primarySize = barGauge.primarySize;
+
+                barPositions.Add(new Vector4(primaryPosition.x, primaryPosition.y, primarySize.x, primarySize.y));
+                barRounding.Add(barGauge.Rounding);
+                barStartColor.Add(barGauge.StartColor);
+                barEndColor.Add(barGauge.EndColor);
+
+                barPositions.Add(new Vector4(barGauge.Position.x, barGauge.Position.y, barGauge.Size.x, barGauge.Size.y));
+                barRounding.Add(0.02f);
+                barStartColor.Add(barGauge.BackgroundColor);
+                barEndColor.Add(barGauge.BackgroundColor);
+            });
+
+            gaugeMaterial.SetInt("_barCount", barPositions.Count);
+            if (barPositions.Count > 0)
+            {
+                gaugeMaterial.SetVectorArray("_barStartColor", barStartColor.ToArray());
+                gaugeMaterial.SetVectorArray("_barEndColor", barEndColor.ToArray());
+                gaugeMaterial.SetVectorArray("_barPosition", barPositions.ToArray());
+                gaugeMaterial.SetFloatArray("_barRounding", barRounding.ToArray());
             }
 
             RenderTexture.active = renderTexture;
-            GL.Clear(true, true, new Color(0, 0, 0, 0.85f)); // Ensure transparency
+            GL.Clear(true, true, new Color(0, 0, 0, 0.5f)); // Ensure transparency
 
             Graphics.Blit(null, renderTexture, gaugeMaterial);
 
             RenderTexture.active = null;
+        }
+
+        public List<Vector2> circleSymetrie(Vector2 midPoint, float size, float startDegreeOffset, int count)
+        {
+            int degreeOffset = 360 / count;
+            List<Vector2> points = new List<Vector2>();
+
+            size /= 2;
+
+            for (int i = 0; i < count; i++)
+            {
+                points.Add(new Vector2((float)(size * Math.Cos(degreeOffset * i + startDegreeOffset)) + midPoint.x, (float)(size * Math.Sin(degreeOffset * i + startDegreeOffset)) + midPoint.y));
+            }
+
+            return points;
         }
 
         public class circle
@@ -324,28 +413,152 @@ namespace CustomOverlay
             }
         }
 
+        public class barGauge
+        {
+            private string name;
+            private float percent;
+            private Vector2 position;
+            private Vector2 size;
+            private Vector4 startColor;
+            private Vector4 endColor;
+            private Vector4 backgroundColor;
+
+            private TextMeshProUGUI textMeshProUGUI;
+            public float Percent { get { return percent; } set { percent = Math.Max(Math.Min(value, 1.0f), 0.0f); } }
+
+            public Vector2 primaryPosition { get { return new Vector2(position.x - size.x / 2.0f + (size.x * percent) / 2.0f, position.y); } }
+            public Vector2 primarySize { get { return new Vector2(size.x * percent, size.y - 0.02f); } }
+
+            public Vector2 Position { get { return position; } }
+            public Vector2 Size { get { return size; } }
+
+            public Vector4 StartColor { get { return startColor; } }
+            public Vector4 EndColor { get { return endColor; } }
+            public Vector4 BackgroundColor { get { return backgroundColor; } }
+
+            public float Rounding { get { return percent > 0.2f ? 0.16f : 0.2f; } }
+            public float thickness { get { return percent > 0.2f ? 0.02f : 0.2f; } }
+
+            public barGauge(string name, float percent, Vector2 position, Vector2 size, Vector4 startColor, Vector4 endColor, Vector4 backgroundColor)
+            {
+                this.name = name;
+                this.percent = percent;
+                this.position = position;
+                this.size = size;
+                this.startColor = startColor;
+                this.endColor = endColor;
+                this.backgroundColor = backgroundColor;
+
+                textMeshProUGUI = instance.CreateText(name, new Vector3(position.x - size.x / 2.0f - 0.015f, position.y));
+                //textMeshProUGUI.alignment = TextAlignmentOptions.Right;
+            }
+        }
+
+        public class resourceInfo
+        {
+            public float amount;
+            public float maxAmount;
+
+            public resourceInfo(float amount, float maxAmount)
+            {
+                this.amount = amount;
+                this.maxAmount = maxAmount;
+            }
+        }
+
         void Update()
         {
-                speedGauge.UpddateValue((float)FlightGlobals.ActiveVessel.speed);
-                throttleGauge.UpddateValue(FlightGlobals.ActiveVessel.ctrlState.mainThrottle * 100);
-                machGauge.UpddateValue((float)FlightGlobals.ActiveVessel.mach);
-                gGauge.UpddateValue((float)FlightGlobals.ActiveVessel.geeForce);
-                gGauge.Max = Math.Max(gGauge.Max, (float)FlightGlobals.ActiveVessel.geeForce);
+            //speedGauge.UpddateValue((float)FlightGlobals.ActiveVessel.speed);
+            //throttleGauge.UpddateValue(FlightGlobals.ActiveVessel.ctrlState.mainThrottle * 100);
+            //machGauge.UpddateValue((float)FlightGlobals.ActiveVessel.mach);
+            //gGauge.UpddateValue((float)FlightGlobals.ActiveVessel.geeForce);
+            //gGauge.Max = Math.Max(gGauge.Max, (float)FlightGlobals.ActiveVessel.geeForce);
+
+            //SortedDictionary<int, Dictionary<PartResourceDefinition, resourceInfo>> stageResources = new SortedDictionary<int, Dictionary<PartResourceDefinition, resourceInfo>> { };
+
+
+            //FlightGlobals.ActiveVessel.Parts.ForEach(part =>
+            //{
+            //    if (!stageResources.ContainsKey(part.inStageIndex))
+            //    {
+            //        stageResources.Add(part.inStageIndex, new Dictionary<PartResourceDefinition, resourceInfo> { } );
+            //    }
+            //    foreach (PartResource item in part.Resources.dict.Values)
+            //    {
+            //        if (stageResources[part.inStageIndex].ContainsKey(item.info))
+            //        {
+            //            stageResources[part.inStageIndex][item.info].amount += (float)item.amount;
+            //            stageResources[part.inStageIndex][item.info].maxAmount += (float)item.maxAmount;
+            //        }
+            //        else
+            //        {
+            //            stageResources[part.inStageIndex].Add(item.info, new resourceInfo((float)item.amount, (float)item.maxAmount));
+            //        }
+            //    }
+            //});
+
+            //lfGauge.Percent = stageResources.Max().Value[PartResourceLibrary.Instance.GetDefinition("LiquidFuel")].amount / stageResources.Max().Value[PartResourceLibrary.Instance.GetDefinition("LiquidFuel")].maxAmount;
+            //oxGauge.Percent = stageResources.Max().Value[PartResourceLibrary.Instance.GetDefinition("Oxidizer")].amount / stageResources.Max().Value[PartResourceLibrary.Instance.GetDefinition("Oxidizer")].maxAmount;
+
+            //FlightGlobals.ActiveVessel.GetConnectedResourceTotals(PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id, out double lfAmount, out double lfMaxAmount, true);
+            //FlightGlobals.ActiveVessel.GetConnectedResourceTotals(PartResourceLibrary.Instance.GetDefinition("Oxidizer").id, out double oxAmount, out double oxMaxAmount, true);
+
+            ARPResourceList rsList = KSPAlternateResourcePanel.KSPAlternateResourcePanel.APIInstance.lstResourcesLastStage;
+
+            lfGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id].MaxAmountValue);
+            oxGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("Oxidizer").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("Oxidizer").id].MaxAmountValue);
+
 
             if (!UIMasterController.Instance.IsUIShowing)
             {
+
+                List<Vector4> barPositions = new List<Vector4> { };
+                List<Vector4> barStartColor = new List<Vector4> { };
+                List<Vector4> barEndColor = new List<Vector4> { };
+                List<float> barRounding = new List<float> { };
+                List<float> barThickness = new List<float> { };
+
+                barGauges.ForEach(barGauge =>
+                {
+                    Vector2 primaryPosition = barGauge.primaryPosition;
+                    Vector2 primarySize = barGauge.primarySize;
+
+                    barPositions.Add(new Vector4(primaryPosition.x, primaryPosition.y, primarySize.x, primarySize.y));
+                    barRounding.Add(barGauge.Rounding);
+                    barStartColor.Add(barGauge.StartColor);
+                    barEndColor.Add(barGauge.EndColor);
+                    barThickness.Add(barGauge.thickness);
+
+                    barPositions.Add(new Vector4(barGauge.Position.x, barGauge.Position.y, barGauge.Size.x, barGauge.Size.y));
+                    barRounding.Add(0.02f);
+                    barStartColor.Add(barGauge.BackgroundColor);
+                    barEndColor.Add(barGauge.BackgroundColor);
+                    barThickness.Add(0.02f);
+                });
+
+                gaugeMaterial.SetInt("_barCount", barPositions.Count);
+                if (barPositions.Count > 0)
+                {
+                    gaugeMaterial.SetVectorArray("_barStartColor", barStartColor.ToArray());
+                    gaugeMaterial.SetVectorArray("_barEndColor", barEndColor.ToArray());
+                    gaugeMaterial.SetVectorArray("_barPosition", barPositions.ToArray());
+                    gaugeMaterial.SetFloatArray("_barRounding", barRounding.ToArray());
+                    gaugeMaterial.SetFloatArray("_barThickness", barThickness.ToArray());
+                }
+
+
                 if (!spaceReached && FlightGlobals.ActiveVessel.atmDensity == 0)
                 {
                     spaceReached = true;
-                    machGauge.disable();
+                    //machGauge.disable();
                 }
                 else if (spaceReached && FlightGlobals.ActiveVessel.atmDensity > 0)
                 {
                     spaceReached = false;
-                    machGauge.enable();
+                    //machGauge.enable();
                 }
 
-                List <Vector4> vectorCircles = new List<Vector4> { };  // Each (x, y, radius, innerRadius)
+                List<Vector4> vectorCircles = new List<Vector4> { };  // Each (x, y, radius, innerRadius)
                 List<Vector4> circleFill = new List<Vector4> { }; // Each fill amount
                 List<Vector4> colors = new List<Vector4> { };   // Each (r, g, b, alpha)
 
@@ -378,15 +591,15 @@ namespace CustomOverlay
                 gaugeMaterial.SetInt("_RectangleCount", rectangles.Count);
                 if (rectangles.Count > 0)
                 {
-                    gaugeMaterial.SetVectorArray("_Rectangles", rectangles);
-                    gaugeMaterial.SetFloatArray("_RectangleRotation", rectangleRotations);
-                    gaugeMaterial.SetVectorArray("_RectangleColors", rectangleColors);
+                    gaugeMaterial.SetVectorArray("_Rectangles", rectangles.ToArray());
+                    gaugeMaterial.SetFloatArray("_RectangleRotation", rectangleRotations.ToArray());
+                    gaugeMaterial.SetVectorArray("_RectangleColors", rectangleColors.ToArray());
                 }
 
                 uiCamera.enabled = true;
 
                 RenderTexture.active = renderTexture;
-                GL.Clear(true, true, new Color(0, 0, 0, 0.85f)); // Ensure transparency
+                GL.Clear(true, true, new Color(0, 0, 0, 0.5f)); // Ensure transparency
 
                 Graphics.Blit(null, renderTexture, gaugeMaterial);
 

@@ -5,6 +5,7 @@
         _MainTex ("Texture", 2D) = "white" {}
         _CircleCount("Circle Count", Int) = 1
         _RectangleCount("Rectangle Count", Int) = 1
+        _barCount("bar Count", Int) = 1
     }
     SubShader
     {
@@ -32,13 +33,20 @@
 
             sampler2D _MainTex;
             uniform int _CircleCount;
-            uniform float4 _Circles[20]; // (x, y, radius, innerRadius)
-            uniform float4 _CircleFill[20]; // (startDegree, endDegree, fillPercent, direction (1 = clockwise, 0 = counterClockwise)) // (rotation in degree/360)
-            uniform float4 _CircleColors[20]; // (r, g, b, alpha)
+            uniform float4 _Circles[80]; // (x, y, radius, innerRadius)
+            uniform float4 _CircleFill[80]; // (startDegree, endDegree, fillPercent, direction (1 = clockwise, 0 = counterClockwise)) // (rotation in degree/360)
+            uniform float4 _CircleColors[80]; // (r, g, b, alpha)
             uniform int _RectangleCount;
             uniform float4 _Rectangles[40]; // (x, y, width, height)
             uniform float _RectangleRotation[40]; // (rotation in radians)
             uniform float4 _RectangleColors[40]; // (r, g, b, alpha)
+            //horizontal bar
+            uniform int _barCount;
+            uniform float4 _barStartColor[20];
+            uniform float4 _barEndColor[20];
+            uniform float4 _barPosition[20]; //x, y, width, height
+            uniform float _barRounding[20];
+            uniform float _barThickness[20];
 
             uniform float _AspectRatio;
 
@@ -48,6 +56,12 @@
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 return o;
+            }
+
+            float roundedRectangle (float2 currentXY, float2 pos, float2 size, float radius, float thickness)
+            {
+                float d = length(max(abs(currentXY - pos),size) - size) - radius;
+                return smoothstep(0.66, 0.33, d / thickness * 5.0);
             }
 
             fixed4 frag(v2f i) : SV_Target {
@@ -104,6 +118,33 @@
                         }
                     }
                 }
+
+                // Bars
+                if (all(finalColor == float4(0, 0, 0, 0))){
+                    for (int j = 0; j < _barCount; j++){
+
+                        float2 uv2 = (2.0 * i.uv - 1.0) * _AspectRatio;             // -1.0 .. 1.0
+                        float2 center = (2.0 * _barPosition[j].xy - 1.0) * _AspectRatio;
+                        float2 size = _barPosition[j].zw * _AspectRatio;
+                        float alpha = roundedRectangle (uv2, center, size, _barRounding[j], _barThickness[j]);
+
+                        if (alpha > 0){
+                            float uvPercent = (i.uv.x - (_barPosition[j].x - _barPosition[j].z / 2)) / _barPosition[j].z;
+
+                            // finalColor.x = _barStartColor[j].x * (1- i.uv.x) + _barEndColor[j].x * i.uv.x;
+                            // finalColor.y = _barStartColor[j].y * (1- i.uv.x) + _barEndColor[j].y * i.uv.x;
+                            // finalColor.z = _barStartColor[j].z * (1- i.uv.x) + _barEndColor[j].z * i.uv.x;
+
+                            finalColor.x = lerp(_barStartColor[j].x, _barEndColor[j].x, uvPercent);
+                            finalColor.y = lerp(_barStartColor[j].y, _barEndColor[j].y, uvPercent);
+                            finalColor.z = lerp(_barStartColor[j].z, _barEndColor[j].z, uvPercent);
+                            finalColor.w = alpha;
+                            break;
+                            // finalColor.w = alpha;
+                        }
+                    }
+                }
+
                 return tex2D(_MainTex, i.uv) * finalColor;
                 }
             ENDCG
