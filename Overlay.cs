@@ -34,6 +34,17 @@ namespace CustomOverlay
         barGauge lfGauge;
         barGauge oxGauge;
 
+        List<circle> innerCircles;
+        List<circle> middleCircles;
+        List<circle> outerCircles;
+
+        TextMeshProUGUI speedText;
+        TextMeshProUGUI altitudeText;
+        TextMeshProUGUI speedValue;
+        TextMeshProUGUI altitudeValue;
+        TextMeshProUGUI timeText;
+        TextMeshProUGUI text;
+
 
         private void OnEnable()
         {
@@ -50,13 +61,19 @@ namespace CustomOverlay
             reload();
         }
 
+        public enum textAlignment
+        {
+            left,
+            center,
+            right
+        }
+
         /// <summary>
         /// position is relativ on the rendertexture
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="position">relativ position on the rendertexture</param>
+        /// <param name="textLength">Only needed for aligment, needs to be manually checked</param>
         /// <returns></returns>
-        public TextMeshProUGUI CreateText(string text, Vector3 position, float fontSize = 1)
+        public TextMeshProUGUI CreateText(string text, Vector2 position, textAlignment alignment, float fontSize = 1, int textLength = 0)
         {
             GameObject textObj = new GameObject("TextMeshPro");
             textObj.transform.SetParent(GameObject.Find("Text Canvas").transform);
@@ -68,9 +85,24 @@ namespace CustomOverlay
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = Color.white;
 
+            tmp.ForceMeshUpdate();
+
             RectTransform textRect = tmp.GetComponent<RectTransform>();
-            textRect.sizeDelta = new Vector2(overlaySize.x, overlaySize.y); // Match render texture size
-            textRect.localPosition = new Vector3(position.x * overlaySize.x - overlaySize.x / 2, position.y * overlaySize.y - overlaySize.y / 2);
+            //textRect.sizeDelta = new Vector2(overlaySize.x, overlaySize.y); // Match render texture size
+            switch (alignment)
+            {
+                case textAlignment.left:
+                    textRect.localPosition = new Vector2(position.x * overlaySize.x - overlaySize.x / 2 + tmp.preferredWidth * 12, position.y * overlaySize.y - overlaySize.y / 2);
+                    break;
+                case textAlignment.center:
+                    textRect.localPosition = new Vector2(position.x * overlaySize.x - overlaySize.x / 2, position.y * overlaySize.y - overlaySize.y / 2);
+                    break;
+                case textAlignment.right:
+                    textRect.localPosition = new Vector2(position.x * overlaySize.x - overlaySize.x / 2 - tmp.preferredWidth * 12, position.y * overlaySize.y - overlaySize.y / 2);
+                    break;
+            }
+
+            Debug.Log($"Text Position: {textRect.anchoredPosition}"); // Debugging
 
             return tmp;
         }
@@ -125,8 +157,8 @@ namespace CustomOverlay
             Rectangles = new List<rectangle>();
             barGauges = new List<barGauge>();
 
-            lfGauge = new barGauge("LF", 0, new Vector2(0.2f, 0.15f), new Vector2(0.1f, 0.05f), new Vector4(0.35f, 0.35f, 0.35f, 1), new Vector4(1, 1, 1, 1), new Vector4(0.1f, 0.1f, 0.1f, 1f));
-            oxGauge = new barGauge("OX", 0, new Vector2(0.2f, 0.3f), new Vector2(0.1f, 0.05f), new Vector4(0.35f, 0.35f, 0.35f, 1), new Vector4(1, 1, 1, 1), new Vector4(0.1f, 0.1f, 0.1f, 1f));
+            oxGauge = new barGauge("LOX", 0, new Vector2(0.2f, 0.3f), new Vector2(0.1f, 0.05f), new Vector4(0.35f, 0.35f, 0.35f, 1), new Vector4(1, 1, 1, 1), new Vector4(0.1f, 0.1f, 0.1f, 1f));
+            lfGauge = new barGauge("CH4", 0, new Vector2(0.2f, 0.15f), new Vector2(0.1f, 0.05f), new Vector4(0.35f, 0.35f, 0.35f, 1), new Vector4(1, 1, 1, 1), new Vector4(0.1f, 0.1f, 0.1f, 1f));
             barGauges.Add(lfGauge);
             barGauges.Add(oxGauge);
 
@@ -136,17 +168,23 @@ namespace CustomOverlay
             //gGauge = new circleGauge("G", "G-Forces", 0, 5, 0, 3, new Vector2(0.95f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
 
             // Superheavy engines
-            Vector2 midPoint = new Vector2(0.1f, 0.5f);
-            float circleSize = 0.1f;
-            float innerSize = 0.3f;
-            float middleSize = 0.5f;
-            float outerSize = 0.8f;
+            Vector2 midPoint = new Vector2(0.075f, 0.5f);
+            float circleSize = 0.05f;
+            float innerSize = 0.15f;
+            float middleSize = 0.4f;
+            float outerSize = 0.7f;
 
-            circleSymetrie(midPoint, innerSize, 0, 3).ForEach(v => Circles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
-            circleSymetrie(midPoint, middleSize, 0, 10).ForEach(v => Circles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
-            circleSymetrie(midPoint, outerSize, 9, 20).ForEach(v => Circles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
+            innerCircles = new List<circle> { };
+            middleCircles = new List<circle> { };
+            outerCircles = new List<circle> { };
 
+            circleSymetrie(midPoint, innerSize, 0, 3).ForEach(v => innerCircles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
+            circleSymetrie(midPoint, middleSize, 0, 10).ForEach(v => middleCircles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
+            circleSymetrie(midPoint, outerSize, 9, 20).ForEach(v => outerCircles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
 
+            innerCircles.ForEach(c => Circles.Add(c));
+            middleCircles.ForEach(c => Circles.Add(c));
+            outerCircles.ForEach(c => Circles.Add(c));
 
             List<Vector4> vectorCircles = new List<Vector4> { };  // Each (x, y, radius, innerRadius)
             List<Vector4> circleFill = new List<Vector4> { }; // Each fill amount
@@ -217,6 +255,13 @@ namespace CustomOverlay
                 gaugeMaterial.SetFloatArray("_barRounding", barRounding.ToArray());
             }
 
+            speedText = CreateText("SPEED", new Vector2(0.13f, 0.6f), textAlignment.left, 1.2f);
+            altitudeText = CreateText("ALTITUDE", new Vector2(0.13f, 0.45f), textAlignment.left, 1.2f);
+            speedValue = CreateText("0 KM/H", new Vector2(0.23f, 0.6f), textAlignment.center, 1.2f);
+            altitudeValue = CreateText("0 KM", new Vector2(0.23f, 0.45f), textAlignment.center, 1.2f);
+            timeText = CreateText("T+00:00:00", new Vector2(0.5f, 0.5f), textAlignment.center, 3f);
+            text = CreateText("STARSHIP FLIGHT TEST", new Vector2(0.5f, 0.25f), textAlignment.center, 1.4f);
+
             RenderTexture.active = renderTexture;
             GL.Clear(true, true, new Color(0, 0, 0, 0.5f)); // Ensure transparency
 
@@ -234,7 +279,7 @@ namespace CustomOverlay
 
             for (int i = 0; i < count; i++)
             {
-                points.Add(new Vector2((float)(size * Math.Cos(degreeOffset * i + startDegreeOffset)) + midPoint.x, (float)(size * Math.Sin(degreeOffset * i + startDegreeOffset)) + midPoint.y));
+                points.Add(new Vector2((float)(size * Math.Sin((degreeOffset * i + startDegreeOffset) * 0.01745329252f) * overlaySize.y / overlaySize.x) + midPoint.x, (float)(size * Math.Cos((degreeOffset * i + startDegreeOffset) * 0.01745329252f)) + midPoint.y));
             }
 
             return points;
@@ -396,8 +441,8 @@ namespace CustomOverlay
                 this.size = size;
                 this.color = color;
 
-                valueTextMesh = instance.CreateText($"{Math.Round(current, decimals)}{unitName}", new Vector3(position.x, position.y), 1.4f);
-                descTextMesh = instance.CreateText($"{text}", new Vector3(position.x, position.y - 0.3f), 1.1f);
+                valueTextMesh = instance.CreateText($"{Math.Round(current, decimals)}{unitName}", new Vector2(position.x, position.y), textAlignment.center, 1.4f);
+                descTextMesh = instance.CreateText($"{text}", new Vector2(position.x, position.y - 0.3f).normalized, textAlignment.center, 1.1f);
 
                 innerCircle = new circle(position, new Vector2(size.x - 0.04f, size.y - 0.09f), color, 50, 310, Math.Min(current / max, 1) * 360);
                 outerCircle = new circle(position, new Vector2(size.x, size.y - 0.02f), color, 50, 310, 360);
@@ -449,8 +494,7 @@ namespace CustomOverlay
                 this.endColor = endColor;
                 this.backgroundColor = backgroundColor;
 
-                textMeshProUGUI = instance.CreateText(name, new Vector3(position.x - size.x / 2.0f - 0.015f, position.y));
-                //textMeshProUGUI.alignment = TextAlignmentOptions.Right;
+                textMeshProUGUI = instance.CreateText(name, new Vector2(position.x - size.x / 2.0f - 0.02f, position.y), textAlignment.left);                
             }
         }
 
@@ -474,43 +518,60 @@ namespace CustomOverlay
             //gGauge.UpddateValue((float)FlightGlobals.ActiveVessel.geeForce);
             //gGauge.Max = Math.Max(gGauge.Max, (float)FlightGlobals.ActiveVessel.geeForce);
 
-            //SortedDictionary<int, Dictionary<PartResourceDefinition, resourceInfo>> stageResources = new SortedDictionary<int, Dictionary<PartResourceDefinition, resourceInfo>> { };
-
-
-            //FlightGlobals.ActiveVessel.Parts.ForEach(part =>
-            //{
-            //    if (!stageResources.ContainsKey(part.inStageIndex))
-            //    {
-            //        stageResources.Add(part.inStageIndex, new Dictionary<PartResourceDefinition, resourceInfo> { } );
-            //    }
-            //    foreach (PartResource item in part.Resources.dict.Values)
-            //    {
-            //        if (stageResources[part.inStageIndex].ContainsKey(item.info))
-            //        {
-            //            stageResources[part.inStageIndex][item.info].amount += (float)item.amount;
-            //            stageResources[part.inStageIndex][item.info].maxAmount += (float)item.maxAmount;
-            //        }
-            //        else
-            //        {
-            //            stageResources[part.inStageIndex].Add(item.info, new resourceInfo((float)item.amount, (float)item.maxAmount));
-            //        }
-            //    }
-            //});
-
-            //lfGauge.Percent = stageResources.Max().Value[PartResourceLibrary.Instance.GetDefinition("LiquidFuel")].amount / stageResources.Max().Value[PartResourceLibrary.Instance.GetDefinition("LiquidFuel")].maxAmount;
-            //oxGauge.Percent = stageResources.Max().Value[PartResourceLibrary.Instance.GetDefinition("Oxidizer")].amount / stageResources.Max().Value[PartResourceLibrary.Instance.GetDefinition("Oxidizer")].maxAmount;
-
-            //FlightGlobals.ActiveVessel.GetConnectedResourceTotals(PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id, out double lfAmount, out double lfMaxAmount, true);
-            //FlightGlobals.ActiveVessel.GetConnectedResourceTotals(PartResourceLibrary.Instance.GetDefinition("Oxidizer").id, out double oxAmount, out double oxMaxAmount, true);
-
             ARPResourceList rsList = KSPAlternateResourcePanel.KSPAlternateResourcePanel.APIInstance.lstResourcesLastStage;
 
-            lfGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id].MaxAmountValue);
-            oxGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("Oxidizer").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("Oxidizer").id].MaxAmountValue);
+            if (rsList.ContainsKey(PartResourceLibrary.Instance.GetDefinition("Oxidizer").id))
+            {
+                oxGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("Oxidizer").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("Oxidizer").id].MaxAmountValue);
+            }
 
+            //if (rsList.ContainsKey(PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id))
+            //{
+            //    lfGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id].MaxAmountValue);
+            //}
+
+            if (rsList.ContainsKey(PartResourceLibrary.Instance.GetDefinition("LqdMethane").id))
+            {
+                lfGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("LqdMethane").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("LqdMethane").id].MaxAmountValue);
+            }
+
+            //lfGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("LqdMethane").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("LqdMethane").id].MaxAmountValue);
+
+            
 
             if (!UIMasterController.Instance.IsUIShowing)
             {
+
+                if (FlightGlobals.ActiveVessel.ActionGroups[KSPActionGroup.Custom10])
+                {
+                    innerCircles.ForEach(c => c.size.y = 0.045f);
+                }
+                else
+                {
+                    innerCircles.ForEach(c => c.size.y = 0.0f);
+                }
+
+                if (FlightGlobals.ActiveVessel.ActionGroups[KSPActionGroup.Custom09])
+                {
+                    middleCircles.ForEach(c => c.size.y = 0.045f);
+                }
+                else
+                {
+                    middleCircles.ForEach(c => c.size.y = 0.0f);
+                }
+
+                if (FlightGlobals.ActiveVessel.ActionGroups[KSPActionGroup.Custom08])
+                {
+                    outerCircles.ForEach(c => c.size.y = 0.045f);
+                }
+                else
+                {
+                    outerCircles.ForEach(c => c.size.y = 0.0f);
+                }
+
+                speedValue.text = $"{Math.Round(FlightGlobals.ActiveVessel.speed * 3.6)} KM/H";
+                altitudeValue.text = $"{Math.Floor(FlightGlobals.ActiveVessel.altitude / 1000)} KM";
+                timeText.text = $"T+{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 3600)).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 60) % 60).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime) % 60).ToString("D2")}";
 
                 List<Vector4> barPositions = new List<Vector4> { };
                 List<Vector4> barStartColor = new List<Vector4> { };
