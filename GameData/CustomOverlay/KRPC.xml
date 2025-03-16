@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>KRPC</name>
+    </assembly>
+    <members>
+        <member name="T:KRPC.Addon">
+             <summary>
+             Main KRPC addon. Contains the kRPC core, config and UI.
+             </summary>
+            </member>
+        <member name="P:KRPC.Addon.Instance">
+             <summary>
+             The instance of the addon
+             </summary>
+            </member>
+        <member name="M:KRPC.Addon.Awake">
+             <summary>
+             Called whenever a scene change occurs. Ensures the server has been initialized,
+             (re)creates the UI, and shuts down the server in the main menu.
+             </summary>
+            </member>
+        <member name="M:KRPC.Addon.OnDestroy">
+             <summary>
+             Destroy the UI.
+             </summary>
+            </member>
+        <member name="M:KRPC.Addon.OnApplicationQuit">
+             <summary>
+             Stop the server if running
+             </summary>
+            </member>
+        <member name="M:KRPC.Addon.OnGUI">
+             <summary>
+             GUI update
+             </summary>
+            </member>
+        <member name="M:KRPC.Addon.FixedUpdate">
+             <summary>
+             Trigger server update
+             </summary>
+            </member>
+        <member name="P:KRPC.Addon.IsPaused">
+             <summary>
+             Whether the game is paused
+             </summary>
+            </member>
+        <member name="M:KRPC.Addon.Update">
+             <summary>
+             Trigger server update, when the game is paused
+             </summary>
+            </member>
+        <member name="T:KRPC.ServicesChecker">
+             <summary>
+             Check kRPC services.
+             </summary>
+            </member>
+        <member name="M:KRPC.ServicesChecker.Start">
+             <summary>
+             Start the services checker addon
+             </summary>
+            </member>
+        <member name="F:KRPC.UI.Icons.iconsPath">
+             <summary>
+             Path to directory in GameData when icons are stored
+             </summary>
+            </member>
+        <member name="M:KRPC.UI.Icons.LoadTexture(System.String)">
+             <summary>
+             Load a file as a 2D texture.
+             </summary>
+            </member>
+        <member name="T:KRPC.Utils.APILoader">
+             <summary>
+             Utilities to load APIs from an assembly without needing to depend on it.
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.APILoader.Load(System.Type,System.String,System.String,System.Version)">
+             <summary>
+             Load an API
+             </summary>
+             <returns>A type object set to the type of the API if it was successfully loaded, <c>null</c> otherwise.</returns>
+             <param name="api">A type specifying the interface.</param>
+             <param name="assemblyName">Name of the assembly to load.</param>
+             <param name="apiName">Name of the API to load.</param>
+             <param name="requiredVersion">Required API version.</param>
+            </member>
+        <member name="T:KRPC.Utils.Compatibility">
+             <summary>
+             Utilities to aid in compatibility between different versions of KSP
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.Compatibility.SpawnPopupDialog(UnityEngine.Vector2,UnityEngine.Vector2,System.String,System.String,System.String,System.String,System.Boolean,UISkinDef,System.Boolean,System.String)">
+             <summary>
+             Calls PopupDialog.SpawnPopupDialog
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.Compatibility.NewMultiOptionDialog(System.String,System.String,System.String,UISkinDef,DialogGUIBase[])">
+             <summary>
+             Constructs a MultiOptionDialog
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.Compatibility.NewLaunchSiteClear(System.String,Game)">
+             <summary>
+             Create a LaunchSiteClear object
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.Compatibility.GameModeIsMission(Game.Modes)">
+             <summary>
+             Returns true if the given game mode is Game.Modes.Mission
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.Compatibility.GameModeIsMissionBuilder(Game.Modes)">
+             <summary>
+             Returns true if the given game mode is Game.Modes.MissionBuilder
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.Compatibility.GameSceneIsMissionBuilder(GameScenes)">
+             <summary>
+             Returns true if the given game scene is GameScenes.MissionBuilder
+             </summary>
+            </member>
+        <member name="T:KRPC.Utils.Compatibility.ModuleDecoupler">
+             <summary>
+             Methods mimicking ModuleDecouplerBase that can be used in KSP 1.6.1 and below
+             Uses reflection to call these methods, as the name of the base class changed in KSP 1.7
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.Compatibility.ModuleDecoupler.#ctor(Part)">
+             <summary>
+             Create a decoupler part module wrapper for the given part. Part must have a decoupler part module.
+             </summary>
+            </member>
+        <member name="P:KRPC.Utils.Compatibility.ModuleDecoupler.Instance">
+             <summary>
+             Get the intance of the part module that this object is wrapping.
+             </summary>
+            </member>
+        <member name="P:KRPC.Utils.Compatibility.ModuleDecoupler.IsEnabled">
+             <summary>
+             Returns true if the decoupler is enabled
+             </summary>
+            </member>
+        <member name="P:KRPC.Utils.Compatibility.ModuleDecoupler.IsDecoupled">
+             <summary>
+             Returns true if the decoupler is decoupled
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.Compatibility.ModuleDecoupler.Decouple">
+             <summary>
+             Decouples the decoupler
+             </summary>
+            </member>
+        <member name="P:KRPC.Utils.Compatibility.ModuleDecoupler.StagingEnabled">
+             <summary>
+             Returns true if staging is enabled for the decoupler
+             </summary>
+            </member>
+        <member name="P:KRPC.Utils.Compatibility.ModuleDecoupler.EjectionForce">
+             <summary>
+             Returns the ejection force of the decoupler in kN
+             </summary>
+            </member>
+        <member name="P:KRPC.Utils.Compatibility.ModuleDecoupler.ExplosiveNode">
+             <summary>
+             Returns the attachment node for the decoupler explosive
+             </summary>
+            </member>
+        <member name="P:KRPC.Utils.Compatibility.ModuleDecoupler.IsOmniDecoupler">
+             <summary>
+             Returns true if the decoupler is an omni decoupler.
+             Always returns false for anchored decouplers.
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.ConfigurationStorage.#ctor(System.String,System.String)">
+             <summary>
+             Create a configuration object with default values. Call Load() to load from the file.
+             The file path is relative to the directory containing this assembly.
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.ConfigurationStorage.Load">
+             <summary>
+             Load settings from the underlying storage
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.ConfigurationStorage.Save">
+             <summary>
+             Save settings to the underlying storage
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.ConfigurationStorageNode.BeforeSave">
+             <summary>
+             Override to provide custom behaviour before saving.
+             </summary>
+            </member>
+        <member name="M:KRPC.Utils.ConfigurationStorageNode.AfterLoad">
+             <summary>
+             Override to provide custom behaviour after loading.
+             </summary>
+            </member>
+    </members>
+</doc>

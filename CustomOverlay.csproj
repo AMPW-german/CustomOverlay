@@ -47,8 +47,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\KSP-Test\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="KSPAlternateResourcePanel">
-      <HintPath>D:\KSP-Test\GameData\TriggerTech\KSPAlternateResourcePanel\KSPAlternateResourcePanel.dll</HintPath>
+    <Reference Include="Google.Protobuf, Version=3.21.9.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\KSP-Test\GameData\kRPC\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -56,8 +57,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarGauge.cs" />
+    <Compile Include="Circle.cs" />
+    <Compile Include="CircleGauge.cs" />
+    <Compile Include="CircleSymetrie.cs" />
+    <Compile Include="CustomUI.cs" />
+    <Compile Include="FlightDataManager.cs" />
     <Compile Include="Overlay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rectangle.cs" />
+    <Compile Include="ResourceManager.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Text.cs" />
+    <Compile Include="valueInterface.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

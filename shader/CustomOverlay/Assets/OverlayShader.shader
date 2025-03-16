@@ -33,20 +33,20 @@
 
             sampler2D _MainTex;
             uniform int _CircleCount;
-            uniform float4 _Circles[80]; // (x, y, radius, innerRadius)
-            uniform float4 _CircleFill[80]; // (startDegree, endDegree, fillPercent, direction (1 = clockwise, 0 = counterClockwise)) // (rotation in degree/360)
-            uniform float4 _CircleColors[80]; // (r, g, b, alpha)
+            uniform float4 _Circles[100]; // (x, y, radius, innerRadius)
+            uniform float4 _CircleFill[100]; // (startDegree, endDegree, fillPercent, direction (1 = clockwise, 0 = counterClockwise)) // (rotation in degree/360)
+            uniform float4 _CircleColors[100]; // (r, g, b, alpha)
             uniform int _RectangleCount;
-            uniform float4 _Rectangles[40]; // (x, y, width, height)
-            uniform float _RectangleRotation[40]; // (rotation in radians)
-            uniform float4 _RectangleColors[40]; // (r, g, b, alpha)
+            uniform float4 _Rectangles[50]; // (x, y, width, height)
+            uniform float _RectangleRotation[50]; // (rotation in radians)
+            uniform float4 _RectangleColors[50]; // (r, g, b, alpha)
             //horizontal bar
             uniform int _barCount;
-            uniform float4 _barStartColor[20];
-            uniform float4 _barEndColor[20];
-            uniform float4 _barPosition[20]; //x, y, width, height
-            uniform float _barRounding[20];
-            uniform float _barThickness[20];
+            uniform float4 _barStartColor[40];
+            uniform float4 _barEndColor[40];
+            uniform float4 _barPosition[40]; //x, y, width, height
+            uniform float _barRounding[40];
+            uniform float _barThickness[40];
 
             uniform float _AspectRatio;
 
