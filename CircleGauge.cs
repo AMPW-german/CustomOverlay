@@ -17,15 +17,13 @@ namespace CustomOverlay
         string unitName;
         string text;
 
-        float min;
-        float max;
         float current;
         int decimals;
 
-        public float Max { get { return max; } set { max = value; } }
+        public float Max { get { return maxValue; } set { maxValue = value; } }
 
         Vector2 position;
-        Vector2 size;
+        float size;
         Vector4 color;
 
         TextMeshProUGUI valueTextMesh;
@@ -50,7 +48,7 @@ namespace CustomOverlay
         {
             if (disabled) { return; }
             current = value;
-            innerCircle.degree = Math.Min(current / max, 1) * 360;
+            innerCircle.degree = Math.Min(current / maxValue, 1) * 360;
             valueTextMesh.text = $"{Math.Round(current, decimals)}{unitName}";
         }
 
@@ -125,9 +123,9 @@ namespace CustomOverlay
                 if (FlightData == flightData.None || FlightData == flightData.missionTime || FlightData == flightData.missionTimeFormatted) { return; }
                 value = FlightDataManager.FlightData(FlightData);
 
-                if (autoScale && value > max)
+                if (autoScale && value > maxValue)
                 {
-                    max = value;
+                    maxValue = value;
                 }
             }
             Upddate();
@@ -138,11 +136,11 @@ namespace CustomOverlay
             valueTextMesh = Overlay.instance.CreateText($"{Math.Round(current, decimals)}{unitName}", new Vector2(position.x, position.y), textAlignment.center, 1.4f);
             descTextMesh = Overlay.instance.CreateText($"{text}", new Vector2(position.x, position.y - 0.3f), textAlignment.center, 1.1f);
 
-            innerCircle = new Circle(position, new Vector2(size.x - 0.04f, size.y - 0.09f), color, 50, 310, Math.Min(current / max, 1) * 360);
-            outerCircle = new Circle(position, new Vector2(size.x, size.y - 0.02f), color, 50, 310, 360);
+            innerCircle = new Circle(position, new Vector2(size * 0.9f, size * 0.75f), color, 50, 310, Math.Min(current / maxValue, 1) * 360);
+            outerCircle = new Circle(position, new Vector2(size, size * 0.95f), color, 50, 310, 360);
 
-            endcapLeft = new Rectangle(new Vector2(position.x - 0.0185f / Settings.OverlaySize.x * 3440, position.y - 0.25f / Settings.OverlaySize.y * 256), new Vector2(0.008f, 0.025f), 40, color);
-            endcapRight = new Rectangle(new Vector2(position.x + 0.0185f / Settings.OverlaySize.x * 3440, position.y - 0.25f / Settings.OverlaySize.y * 256), new Vector2(0.008f, 0.025f), 140, color);
+            endcapLeft = new Rectangle(new Vector2(position.x - 0.0185f * size / 0.4f / Settings.OverlaySize.x * 3440, position.y - 0.25f * size / 0.4f / Settings.OverlaySize.y * 256), new Vector2(0.008f * size / 0.4f, 0.022f * size / 0.4f), 40, color);
+            endcapRight = new Rectangle(new Vector2(position.x + 0.0185f * size / 0.4f / Settings.OverlaySize.x * 3440, position.y - 0.25f * size / 0.4f / Settings.OverlaySize.y * 256), new Vector2(0.008f * size / 0.4f, 0.022f * size / 0.4f), 140, color);
 
             instance.circles.Add(innerCircle);
             instance.circles.Add(outerCircle);
@@ -151,7 +149,7 @@ namespace CustomOverlay
             instance.rectangles.Add(endcapRight);
         }
 
-        public CircleGauge(CustomUI instance, string unitName, string text, valueMode mode, flightData FlightData, float min, float max, float current, int decimals, Vector2 position, Vector2 size, Vector4 color)
+        public CircleGauge(CustomUI instance, string unitName, string text, valueMode mode, flightData FlightData, float max, float current, int decimals, Vector2 position, float size, Vector4 color)
         {
             this.instance = instance;
 
@@ -159,8 +157,7 @@ namespace CustomOverlay
             this.text = text;
             this.Mode = mode;
             this.FlightData = FlightData;
-            this.min = min;
-            this.max = max;
+            this.maxValue = max;
             this.current = current;
             this.decimals = decimals;
             this.position = position;
@@ -170,7 +167,7 @@ namespace CustomOverlay
             create();
         }
 
-        public CircleGauge(CustomUI instance, string unitName, string text, valueMode mode, string resource, float min, float max, float current, int decimals, Vector2 position, Vector2 size, Vector4 color)
+        public CircleGauge(CustomUI instance, string unitName, string text, valueMode mode, string resource, float max, float current, int decimals, Vector2 position, float size, Vector4 color)
         {
             this.instance = instance;
 
@@ -179,8 +176,7 @@ namespace CustomOverlay
             this.Mode = mode;
             this.FlightData = flightData.None;
             this.resourceType = resource;
-            this.min = min;
-            this.max = max;
+            this.maxValue = max;
             this.current = current;
             this.decimals = decimals;
             this.position = position;
@@ -215,15 +211,14 @@ namespace CustomOverlay
                 }
             }
 
-            float.TryParse(node.GetValue("minimum"), out min);
-            float.TryParse(node.GetValue("maximum"), out max);
+            float.TryParse(node.GetValue("maximum"), out float tempMax);
+            maxValue = tempMax;
 
             current = 0;
             int.TryParse(node.GetValue("decimals"), out decimals);
             float.TryParse(node.GetValue("positionX"), out position.x);
             float.TryParse(node.GetValue("positionY"), out position.y);
-            float.TryParse(node.GetValue("outerSize"), out size.x);
-            float.TryParse(node.GetValue("innerSize"), out size.y);
+            float.TryParse(node.GetValue("size"), out size);
 
             float.TryParse(node.GetValue("colorR"), out color.x);
             float.TryParse(node.GetValue("colorG"), out color.y);

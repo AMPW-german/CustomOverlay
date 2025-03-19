@@ -64,14 +64,29 @@ namespace CustomOverlay
                 float.TryParse(itemNode.GetValue("colorB"), out layout.backgroundColor.z);
                 float.TryParse(itemNode.GetValue("colorA"), out layout.backgroundColor.w);
 
-                foreach (ConfigNode item in itemNode.GetNodes())
+                foreach (ConfigNode item in itemNode.GetNodes("circlegauge"))
                 {
-                    switch (item.GetValue("type").ToLower())
-                    {
-                        case "circlegauge":
-                            layout.circleGauges.Add(new CircleGauge(layout, item));
-                            break;
-                    }
+                    layout.circleGauges.Add(new CircleGauge(layout, item));
+                }
+                foreach (ConfigNode item in itemNode.GetNodes("bargauge"))
+                {
+                    layout.barGauges.Add(new BarGauge(item));
+                }
+                foreach (ConfigNode item in itemNode.GetNodes("rectangle"))
+                {
+                    layout.rectangles.Add(new Rectangle(item));
+                }
+                foreach (ConfigNode item in itemNode.GetNodes("circle"))
+                {
+                    layout.circles.Add(new Circle(item));
+                }
+                foreach (ConfigNode item in itemNode.GetNodes("text"))
+                {
+                    layout.texts.Add(new Text(item));
+                }
+                foreach (ConfigNode item in itemNode.GetNodes("circlesymetrie"))
+                {
+                    new CircleSymetrie(layout, item);
                 }
 
                 UIs.Add(layout);

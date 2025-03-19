@@ -36,6 +36,10 @@ namespace CustomOverlay
                 {
                     instance.text = $"T+{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 3600)).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 60) % 60).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime) % 60).ToString("D2")}";
                 }
+                else if (FlightData == flightData.missionTime)
+                {
+                    instance.text = $"T+{FlightGlobals.ActiveVessel.missionTime}";
+                }
                 else
                 {
                     instance.text = $"{value}{text}";

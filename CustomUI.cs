@@ -18,6 +18,10 @@ namespace CustomOverlay
         public void Update()
         {
             circleGauges.ForEach(gauge => gauge.updateValue());
+            barGauges.ForEach(gauge => gauge.updateValue());
+            circles.ForEach(circle => circle.updateValue());
+            texts.ForEach(text => text.updateValue());
+
         }
 
         public void GetCircleVectors(out Vector4[] vectorCircles, out Vector4[] circleFill, out Vector4[] colors)

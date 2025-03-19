@@ -36,6 +36,7 @@ namespace CustomOverlay
         bool autoScale { get; }
         float value { get; }
         float maxValue {  get; }
+        string resourceType { get; }
 
         void updateValue();
     }
