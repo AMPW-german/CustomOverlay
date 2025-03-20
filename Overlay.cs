@@ -6,6 +6,8 @@ using TMPro;
 using UnityEngine;
 using KSP.UI.Screens;
 using System.IO;
+using ClickThroughFix;
+using ToolbarControl_NS;
 
 namespace CustomOverlay
 {
@@ -26,11 +28,13 @@ namespace CustomOverlay
 
         public List<CustomUI> UIs;
         public CustomUI activeUI;
+        public int activeUIIndex = 0;
 
         private Camera uiCamera;
 
         public static Overlay instance;
 
+        ToolbarControl toolbarControl;
 
         protected void Awake()
         {
@@ -48,10 +52,33 @@ namespace CustomOverlay
 
         void Start()
         {
+            CreateButtonIcon();
+
             GameEvents.onShowUI.Add(showUi);
             GameEvents.onHideUI.Add(hideUI);
 
             reload();
+        }
+
+        private void CreateButtonIcon()
+        {
+            toolbarControl = gameObject.AddComponent<ToolbarControl>();
+            toolbarControl.AddToAllToolbars(NextUI, NextUI,
+                ApplicationLauncher.AppScenes.FLIGHT,
+                "Customoverlay_NS",
+                "CustomOverlayButton",
+                "CustomOverlay/UIIcon",
+                "CustomOverlay/UIIcon",
+                "CustomOverlay"
+            );
+        }
+
+        private void NextUI()
+        {
+            activeUIIndex++;
+            activeUIIndex %= UIs.Count;
+            setActiveUI(UIs[activeUIIndex]);
+            ScreenMessages.PostScreenMessage($"Now active: {activeUI.name}", 10f, ScreenMessageStyle.UPPER_RIGHT);
         }
 
         public void showUi()
@@ -101,6 +128,13 @@ namespace CustomOverlay
             Debug.Log($"Text Position: {textRect.anchoredPosition}"); // Debugging
 
             return tmp;
+        }
+
+        public void setActiveUI(CustomUI ui)
+        {
+            UIs.Where(u => u != ui).ToList().ForEach(u => u.textMeshGUIs.ForEach(t => t.alpha = 0));
+            ui.textMeshGUIs.ForEach(t => t.alpha = 1);
+            activeUI = ui;
         }
 
         public void reload()
@@ -163,42 +197,8 @@ namespace CustomOverlay
             //machGauge = new circleGauge("M", "Mach", 0, 3, 0, 3, new Vector2(0.25f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
             //gGauge = new circleGauge("G", "G-Forces", 0, 5, 0, 3, new Vector2(0.95f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
 
-            // Superheavy engines
-            Vector2 midPoint = new Vector2(0.075f, 0.5f);
-            float circleSize = 0.05f;
-            float innerSize = 0.15f;
-            float middleSize = 0.4f;
-            float outerSize = 0.7f;
-
-            //innerCircles = new List<circle> { };
-            //middleCircles = new List<circle> { };
-            //outerCircles = new List<circle> { };
-
-            //circleSymetrie(midPoint, innerSize, 0, 3).ForEach(v => innerCircles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
-            //circleSymetrie(midPoint, middleSize, 0, 10).ForEach(v => middleCircles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
-            //circleSymetrie(midPoint, outerSize, 9, 20).ForEach(v => outerCircles.Add(new circle(v, new Vector2(circleSize, 0), new Vector4(1, 1, 1, 1), 0, 360, 360)));
-
-            //innerCircles.ForEach(c => Circles.Add(c));
-            //middleCircles.ForEach(c => Circles.Add(c));
-            //outerCircles.ForEach(c => Circles.Add(c));
-
-
-
-
-
-            //speedText = CreateText("SPEED", new Vector2(0.13f, 0.6f), textAlignment.left, 1.2f);
-            //altitudeText = CreateText("ALTITUDE", new Vector2(0.13f, 0.45f), textAlignment.left, 1.2f);
-            //speedValue = CreateText("0 KM/H", new Vector2(0.23f, 0.6f), textAlignment.center, 1.2f);
-            //altitudeValue = CreateText("0 KM", new Vector2(0.23f, 0.45f), textAlignment.center, 1.2f);
-            //timeText = CreateText("T+00:00:00", new Vector2(0.5f, 0.5f), textAlignment.center, 3f);
-            //text = CreateText("STARSHIP FLIGHT TEST", new Vector2(0.5f, 0.25f), textAlignment.center, 1.4f);
-
-            //activeUI = new CustomUI();
-            //activeUI.circleGauges.Add(new CircleGauge(activeUI, "m/s", "Speed", valueMode.flightData, flightData.airspeed, 0, 340, 0, 2, new Vector2(0.3f, 0.5f), new Vector2(0.5f, 0.5f), Vector4.one));
-            //activeUI.circleGauges.Add(new CircleGauge(activeUI, "LF", "Liquid Fuel", valueMode.resource, "LiquidFuel", 0, 340, 0, 2, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector4.one));
-
             UIs = Settings.LoadUIs();
-            activeUI = UIs.First();
+            setActiveUI(UIs.First());
 
             RenderTexture.active = renderTexture;
             GL.Clear(true, true, new Color(0, 0, 0, 0.5f)); // Ensure transparency
@@ -209,7 +209,19 @@ namespace CustomOverlay
         }
 
 
+        //public List<Vector2> circleSymetrie(Vector2 midPoint, float size, float startDegreeOffset, int count)
+        //{
+        //    int degreeOffset = 360 / count;
 
+        //    List<Vector2> points = new List<Vector2>();
+        //    size /= 2;
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        points.Add(new Vector2((float)(size * Math.Sin((degreeOffset * i + startDegreeOffset) * 0.01745329252f) * overlaySize.y / overlaySize.x) + midPoint.x, (float)(size * Math.Cos((degreeOffset * i + startDegreeOffset) * 0.01745329252f)) + midPoint.y));
+        //    }
+
+        //    return points;
+        //}
 
         void Update()
         {            
@@ -329,11 +341,13 @@ namespace CustomOverlay
 
         private void OnDestroy()
         {
+            toolbarControl.OnDestroy();
+            Destroy(toolbarControl);
+
             GameEvents.onShowUI.Remove(showUi);
             GameEvents.onHideUI.Remove(hideUI);
 
             assetBundle.Unload(true);
-
         }
     }
 }

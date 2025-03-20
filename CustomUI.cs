@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace CustomOverlay
@@ -10,13 +11,16 @@ namespace CustomOverlay
         public Vector4 backgroundColor = new Vector4(0, 0, 0, 0.5f);
 
         public List<Circle> circles;
+        public List<CircleSymetrie> symertrieCircles;
         public List<Rectangle> rectangles;
         public List<CircleGauge> circleGauges;
         public List<BarGauge> barGauges;
         public List<Text> texts;
+        public List<TextMeshProUGUI> textMeshGUIs;
 
         public void Update()
         {
+            symertrieCircles.ForEach(circles => circles.Update());
             circleGauges.ForEach(gauge => gauge.updateValue());
             barGauges.ForEach(gauge => gauge.updateValue());
             circles.ForEach(circle => circle.updateValue());
@@ -98,7 +102,7 @@ namespace CustomOverlay
                 barArray[i] = BarGauge.GetEmpty();
             }
 
-            int offset = 1;
+            int offset = 20;
             for (int i = 0; i < 20; i++)
             {
                 vectorBars[i] = new Vector4(barArray[i].primaryPosition.x, barArray[i].primaryPosition.y, barArray[i].primarySize.x, barArray[i].primarySize.y);
@@ -112,7 +116,6 @@ namespace CustomOverlay
                 endColor[i + offset] = barArray[i].BackgroundColor;
                 barRounding[i + offset] = barArray[i].Rounding;
                 barThickness[i + offset] = barArray[i].thickness;
-                offset++;
             }
         }
 
@@ -121,10 +124,12 @@ namespace CustomOverlay
         public CustomUI()
         {
             circles = new List<Circle> { };
+            symertrieCircles = new List<CircleSymetrie> { };
             rectangles = new List<Rectangle> { };
             circleGauges = new List<CircleGauge> { };
             barGauges = new List<BarGauge> { };
             texts = new List<Text> { };
+            textMeshGUIs = new List<TextMeshProUGUI> { };
         }
     }
 }

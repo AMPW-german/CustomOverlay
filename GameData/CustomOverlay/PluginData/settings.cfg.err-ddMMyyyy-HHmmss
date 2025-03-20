@@ -1,6 +1,6 @@
 KRPCConfiguration
 {
-	mainWindowVisible = False
+	mainWindowVisible = True
 	infoWindowVisible = False
 	autoStartServers = False
 	autoAcceptConnections = False

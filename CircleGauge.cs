@@ -142,6 +142,9 @@ namespace CustomOverlay
             endcapLeft = new Rectangle(new Vector2(position.x - 0.0185f * size / 0.4f / Settings.OverlaySize.x * 3440, position.y - 0.25f * size / 0.4f / Settings.OverlaySize.y * 256), new Vector2(0.008f * size / 0.4f, 0.022f * size / 0.4f), 40, color);
             endcapRight = new Rectangle(new Vector2(position.x + 0.0185f * size / 0.4f / Settings.OverlaySize.x * 3440, position.y - 0.25f * size / 0.4f / Settings.OverlaySize.y * 256), new Vector2(0.008f * size / 0.4f, 0.022f * size / 0.4f), 140, color);
 
+            instance.textMeshGUIs.Add(valueTextMesh);
+            instance.textMeshGUIs.Add(descTextMesh);
+
             instance.circles.Add(innerCircle);
             instance.circles.Add(outerCircle);
 

@@ -84,7 +84,7 @@ namespace CustomOverlay
             textMeshProUGUI = Overlay.instance.CreateText(name, new Vector2(position.x - size.x / 2.0f - 0.02f, position.y), textAlignment.left);
         }
 
-        public BarGauge(ConfigNode node)
+        public BarGauge(CustomUI instance, ConfigNode node)
         {
             name = node.GetValue("name");
 
@@ -103,10 +103,10 @@ namespace CustomOverlay
                 {
                     autoScale = bool.Parse(node.GetValue("autoscale"));
                 }
-            }
 
-            float.TryParse(node.GetValue("maximum"), out float tempMax);
-            maxValue = tempMax;
+                float.TryParse(node.GetValue("maximum"), out float tempMax);
+                maxValue = tempMax;
+            }
 
             value = 0;
             float.TryParse(node.GetValue("positionX"), out position.x);
@@ -128,6 +128,10 @@ namespace CustomOverlay
             float.TryParse(node.GetValue("bgColorG"), out backgroundColor.y);
             float.TryParse(node.GetValue("bgColorB"), out backgroundColor.z);
             float.TryParse(node.GetValue("bgColorA"), out backgroundColor.w);
+
+            textMeshProUGUI = Overlay.instance.CreateText(name, new Vector2(position.x - size.x / 2.0f - 0.02f, position.y), textAlignment.left);
+
+            instance.textMeshGUIs.Add(textMeshProUGUI);
         }
     }
 }

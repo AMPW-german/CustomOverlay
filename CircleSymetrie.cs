@@ -11,6 +11,7 @@ namespace CustomOverlay
         private List<Circle> circles;
         private KSPActionGroup actionGroup;
 
+        public float radius;
         public float OuterSize;
         public float FilledSize;
         public float EmptySize;
@@ -62,6 +63,7 @@ namespace CustomOverlay
             int count = int.Parse(node.GetValue("count"));
             float startDegreeOffset = float.Parse(node.GetValue("startDegreeOffset"));
             Vector2 midPoint = new Vector2(float.Parse(node.GetValue("midPointX")), float.Parse(node.GetValue("midPointY")));
+            radius = float.Parse(node.GetValue("radius")) / 2;
             OuterSize = float.Parse(node.GetValue("OuterSize"));
             FilledSize = float.Parse(node.GetValue("FilledSize"));
             EmptySize = float.Parse(node.GetValue("EmptySize"));
@@ -72,13 +74,14 @@ namespace CustomOverlay
 
             for (int i = 0; i < count; i++)
             {
-                Vector2 circlePoint = new Vector2((float)(OuterSize * Math.Sin((degreeOffset * i + startDegreeOffset) * 0.01745329252f) * Settings.OverlaySize.y / Settings.OverlaySize.x) + midPoint.x, (float)(OuterSize * Math.Cos((degreeOffset * i + startDegreeOffset) * 0.01745329252f)) + midPoint.y);
-                circles.Add(new Circle(circlePoint, new Vector2(OuterSize, 0), color, 0, 360, 360));
+                Vector2 circlePoint = new Vector2((float)(radius * Math.Sin((degreeOffset * i + startDegreeOffset) * 0.01745329252f) * Settings.OverlaySize.y / Settings.OverlaySize.x) + midPoint.x, (float)(radius * Math.Cos((degreeOffset * i + startDegreeOffset) * 0.01745329252f)) + midPoint.y);
+                circles.Add(new Circle(circlePoint, new Vector2(OuterSize, FilledSize), color, 0, 360, 360));
             }
             circles.ForEach(circle => instance.circles.Add(circle));
 
             string actionGroupNum = node.GetValue("actionGroup");
             actionGroup = (KSPActionGroup) Enum.Parse(typeof(KSPActionGroup), Enum.GetNames(typeof(KSPActionGroup)).ToList().Where(x => x.Contains(actionGroupNum)).First());
+            instance.symertrieCircles.Add(this);
         }
     }
 }

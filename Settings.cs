@@ -70,7 +70,7 @@ namespace CustomOverlay
                 }
                 foreach (ConfigNode item in itemNode.GetNodes("bargauge"))
                 {
-                    layout.barGauges.Add(new BarGauge(item));
+                    layout.barGauges.Add(new BarGauge(layout, item));
                 }
                 foreach (ConfigNode item in itemNode.GetNodes("rectangle"))
                 {
@@ -82,7 +82,7 @@ namespace CustomOverlay
                 }
                 foreach (ConfigNode item in itemNode.GetNodes("text"))
                 {
-                    layout.texts.Add(new Text(item));
+                    layout.texts.Add(new Text(layout, item));
                 }
                 foreach (ConfigNode item in itemNode.GetNodes("circlesymetrie"))
                 {

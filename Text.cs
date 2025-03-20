@@ -8,7 +8,7 @@ namespace CustomOverlay
 {
     public class Text : valueInterface
     {
-        TextMeshProUGUI instance;
+        TextMeshProUGUI textInstance;
 
         string text;
         public valueMode Mode { get; private set; }
@@ -18,6 +18,8 @@ namespace CustomOverlay
         public string valueString { get; private set; }
         public float maxValue { get; private set; }
         public string resourceType { get; private set; }
+        public int decimals { get; private set; }
+        public float multiplier { get; private set; }
 
         public void updateValue()
         {
@@ -25,7 +27,7 @@ namespace CustomOverlay
             {
                 value = (float)ResourceManager.getResource(PartResourceLibrary.Instance.GetDefinition(resourceType));
                 maxValue = (float)ResourceManager.getResourceMax(PartResourceLibrary.Instance.GetDefinition(resourceType));
-                instance.text = $"{value}/{maxValue} {text}";
+                textInstance.text = $"{Math.Round(value * multiplier, decimals)}/{Math.Round(maxValue * multiplier, decimals)} {text}";
             }
             else if (Mode == valueMode.flightData)
             {
@@ -34,15 +36,15 @@ namespace CustomOverlay
 
                 if (FlightData == flightData.missionTimeFormatted)
                 {
-                    instance.text = $"T+{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 3600)).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 60) % 60).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime) % 60).ToString("D2")}";
+                    textInstance.text = $"T+{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 3600)).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 60) % 60).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime) % 60).ToString("D2")}";
                 }
                 else if (FlightData == flightData.missionTime)
                 {
-                    instance.text = $"T+{FlightGlobals.ActiveVessel.missionTime}";
+                    textInstance.text = $"T+{FlightGlobals.ActiveVessel.missionTime}";
                 }
                 else
                 {
-                    instance.text = $"{value}{text}";
+                textInstance.text = $"{Math.Round(value * multiplier, decimals)}{text}";
                 }
             }
         }
@@ -51,10 +53,10 @@ namespace CustomOverlay
         {
             Mode = valueMode.None;
 
-            instance = Overlay.instance.CreateText(text, position, alignment, fontSize);
+            textInstance = Overlay.instance.CreateText(text, position, alignment, fontSize);
         }
 
-        public Text(ConfigNode node)
+        public Text(CustomUI instance, ConfigNode node)
         {
             text = node.GetValue("text");
             float.TryParse(node.GetValue("positionX"), out float positionX);
@@ -91,13 +93,26 @@ namespace CustomOverlay
             {
                 Mode = valueMode.flightData;
                 FlightData = FlightDataManager.stringToValue(node.GetValue("source"));
-
-                if (node.HasValue("autoscale"))
-                {
-                    autoScale = bool.Parse(node.GetValue("autoscale"));
-                }
             }
-            instance = Overlay.instance.CreateText(text, new Vector2(positionX, positionY), alignment, fontsize);
+            if (node.HasValue("decimals"))
+            {
+                decimals = int.Parse(node.GetValue("decimals"));
+            }
+            else
+            {
+                decimals = 0;
+            }
+            if (node.HasValue("multiplier"))
+            {
+                multiplier = float.Parse(node.GetValue("multiplier"));
+            }
+            else
+            {
+                multiplier = 1;
+            }
+            this.textInstance = Overlay.instance.CreateText(text, new Vector2(positionX, positionY), alignment, fontsize);
+            instance.texts.Add(this);
+            instance.textMeshGUIs.Add(this.textInstance);
         }
     }
 }
