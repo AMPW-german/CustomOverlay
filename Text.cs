@@ -49,13 +49,15 @@ namespace CustomOverlay
                 if (FlightData == flightData.None) { return; }
                 value = FlightDataManager.FlightData(FlightData);
 
-                if (FlightData == flightData.missionTimeFormatted)
+                if (FlightData == flightData.missionTimeFormatted || FlightData == flightData.timeToAPFormatted || FlightData == flightData.timeToPEFormatted)
                 {
-                    textInstance.text = $"T+{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 3600)).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 60) % 60).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime) % 60).ToString("D2")}";
+                    int time = (int) FlightDataManager.FlightData(FlightData);
+                    textInstance.text = $"T+{Convert.ToInt32(Math.Floor(time / 3600f)).ToString("D2")}:{Convert.ToInt32(Math.Floor(time / 60f) % 60).ToString("D2")}:{Convert.ToInt32(Math.Floor((float)time) % 60).ToString("D2")}";
                 }
-                else if (FlightData == flightData.missionTime)
+                else if (FlightData == flightData.missionTime || FlightData == flightData.timeToAP || FlightData == flightData.timeToPE)
                 {
-                    textInstance.text = $"T+{FlightGlobals.ActiveVessel.missionTime}";
+                    int time = (int) FlightDataManager.FlightData(FlightData);
+                    textInstance.text = $"T+{time}";
                 }
                 else
                 {

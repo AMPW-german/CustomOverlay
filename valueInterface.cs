@@ -39,7 +39,9 @@ namespace CustomOverlay
         periapsis,
         currentG,
         timeToAP,
+        timeToAPFormatted,
         timeToPE,
+        timeToPEFormatted,
         missionTime,
         missionTimeFormatted,
     }

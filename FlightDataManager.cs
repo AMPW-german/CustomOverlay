@@ -47,8 +47,10 @@ namespace CustomOverlay
                     return flightData.currentG;
                 case "timeToAP":
                     return flightData.timeToAP;
-                case "timeToPE":
-                    return flightData.timeToPE;
+                case "timeToAPFormatted":
+                    return flightData.timeToAPFormatted;
+                case "timeToPEormatted":
+                    return flightData.timeToPEFormatted;
                 case "missionTime":
                     return flightData.missionTime;
                 case "missionTimeFormatted":
@@ -86,8 +88,10 @@ namespace CustomOverlay
                 case flightData.currentG:
                     return (float)FlightGlobals.ActiveVessel.geeForce;
                 case flightData.timeToAP:
+                case flightData.timeToAPFormatted:
                     return (float)FlightGlobals.ActiveVessel.orbit.timeToAp;
                 case flightData.timeToPE:
+                case flightData.timeToPEFormatted:
                     return (float)FlightGlobals.ActiveVessel.orbit.timeToPe;
                 case flightData.missionTime:
                 case flightData.missionTimeFormatted:
