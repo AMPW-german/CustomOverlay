@@ -1,11 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+
+// Custom Overlay
+// This mod allows you to use fully functional UIs in KSP
+// Copyright (C) 2025 AMPW
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/
 
 namespace CustomOverlay
 {
@@ -22,16 +35,14 @@ namespace CustomOverlay
         {
             ScreenSize = new Vector2Int(GameSettings.SCREEN_RESOLUTION_WIDTH, GameSettings.SCREEN_RESOLUTION_HEIGHT);
 
-            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/CustomUISettings.cfg";
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/OverLaySettings.cfg";
 
             ConfigNode node = ConfigNode.Load(path);
             if ((node == null) || (node.GetNodes().Length == 0))
             {
                 return;
             }
-            ConfigNode[] Nodes = node.GetNodes();
-            ConfigNode[] nodes = Nodes[0].GetNodes("Layout");
-
+            ConfigNode[] nodes = node.GetNodes();
 
             if ((nodes == null) || (nodes.Length == 0))
             {
@@ -50,7 +61,7 @@ namespace CustomOverlay
             }
             if (nodes[0].HasValue("UIPercentX"))
             {
-                UISizeX = (int) (float.Parse(nodes[0].GetValue("UIPercentX")) / 100.0f * ScreenSize.x);
+                UISizeX = (int)(float.Parse(nodes[0].GetValue("UIPercentX")) / 100.0f * ScreenSize.x);
             }
             if (nodes[0].HasValue("UIPercentY"))
             {

@@ -2,6 +2,23 @@
 using TMPro;
 using UnityEngine;
 
+// Custom Overlay
+// This mod allows you to use fully functional UIs in KSP
+// Copyright (C) 2025 AMPW
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/
+
 namespace CustomOverlay
 {
     public class CircleGauge : valueInterface
@@ -139,8 +156,8 @@ namespace CustomOverlay
             innerCircle = new Circle(position, new Vector2(size * 0.9f, size * 0.75f), color, 50, 310, Math.Min(current / maxValue, 1) * 360);
             outerCircle = new Circle(position, new Vector2(size, size * 0.95f), color, 50, 310, 360);
 
-            endcapLeft = new Rectangle(new Vector2(position.x - 0.0185f * size / 0.4f / Settings.OverlaySize.x * 3440, position.y - 0.25f * size / 0.4f / Settings.OverlaySize.y * 256), new Vector2(0.008f * size / 0.4f, 0.022f * size / 0.4f), 40, color);
-            endcapRight = new Rectangle(new Vector2(position.x + 0.0185f * size / 0.4f / Settings.OverlaySize.x * 3440, position.y - 0.25f * size / 0.4f / Settings.OverlaySize.y * 256), new Vector2(0.008f * size / 0.4f, 0.022f * size / 0.4f), 140, color);
+            endcapLeft = new Rectangle(new Vector2(position.x - (float)Math.Sin(46 * 0.01745329252) * (size * 0.875f) / Settings.OverlaySize.x * Settings.OverlaySize.y, position.y - (float)Math.Cos(46 * 0.01745329252) * (size * 0.875f)), new Vector2(0.008f * (size * Settings.OverlaySize.y / 256) / 0.4f, 0.022f * (size * Settings.OverlaySize.y / 256) / 0.4f), 40, color);
+            endcapRight = new Rectangle(new Vector2(position.x - (float)Math.Sin(314 * 0.01745329252) * (size * 0.875f) / Settings.OverlaySize.x * Settings.OverlaySize.y, position.y - (float)Math.Cos(314 * 0.01745329252) * (size * 0.875f)), new Vector2(0.008f * (size * Settings.OverlaySize.y / 256) / 0.4f, 0.022f * (size * Settings.OverlaySize.y / 256) / 0.4f), 140, color);
 
             instance.textMeshGUIs.Add(valueTextMesh);
             instance.textMeshGUIs.Add(descTextMesh);
@@ -212,10 +229,10 @@ namespace CustomOverlay
                 {
                     autoScale = bool.Parse(node.GetValue("autoscale"));
                 }
-            }
 
-            float.TryParse(node.GetValue("maximum"), out float tempMax);
-            maxValue = tempMax;
+                float.TryParse(node.GetValue("maximum"), out float tempMax);
+                maxValue = tempMax;
+            }
 
             current = 0;
             int.TryParse(node.GetValue("decimals"), out decimals);

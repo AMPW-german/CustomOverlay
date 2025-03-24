@@ -1,6 +1,22 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
+
+// Custom Overlay
+// This mod allows you to use fully functional UIs in KSP
+// Copyright (C) 2025 AMPW
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/
 
 namespace CustomOverlay
 {
@@ -34,6 +50,9 @@ namespace CustomOverlay
         public Vector4 EndColor { get { return endColor; } }
         public Vector4 BackgroundColor { get { return backgroundColor; } }
 
+        /// <summary>
+        /// Needs reworking because the aspect ratio the rounding is stretched
+        /// </summary>
         //public float Rounding { get { return Percent > 0.2f ? 0.16f : 0.2f; } }
         //public float thickness { get { return Percent > 0.2f ? 0.02f : 0.2f; } }
 

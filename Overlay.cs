@@ -5,6 +5,23 @@ using TMPro;
 using ToolbarControl_NS;
 using UnityEngine;
 
+// Custom Overlay
+// This mod allows you to use fully functional UIs in KSP
+// Copyright (C) 2025 AMPW
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/
+
 namespace CustomOverlay
 {
     public enum textAlignment
@@ -107,7 +124,7 @@ namespace CustomOverlay
             tmp.ForceMeshUpdate();
 
             RectTransform textRect = tmp.GetComponent<RectTransform>();
-            //textRect.sizeDelta = new Vector2(Settings.OverLaySize.x, Settings.OverLaySize.y); // Match render texture size
+
             switch (alignment)
             {
                 case textAlignment.left:
@@ -156,7 +173,7 @@ namespace CustomOverlay
 
             // Create a material using the shader
             gaugeMaterial = new Material(gaugeShader);
-            gaugeMaterial.SetFloat("_AspectRatio", Settings.OverlaySize.x / Settings.OverlaySize.y);
+            gaugeMaterial.SetFloat("_AspectRatio", Settings.OverlaySize.x / (float)Settings.OverlaySize.y);
 
 
             GameObject camObj = new GameObject("UI Render Camera");
@@ -177,21 +194,7 @@ namespace CustomOverlay
             canvasObj.layer = LayerMask.NameToLayer("UI"); // Use the "UI" layer
 
             RectTransform canvasRect = canvas.GetComponent<RectTransform>();
-            canvasRect.sizeDelta = new Vector2(3440, 256); // Match render texture size
-
-            //Circles = new List<circle>();
-            //Rectangles = new List<rectangle>();
-            //barGauges = new List<barGauge>();
-
-            //oxGauge = new barGauge("LOX", 0, new Vector2(0.2f, 0.3f), new Vector2(0.1f, 0.05f), new Vector4(0.35f, 0.35f, 0.35f, 1), new Vector4(1, 1, 1, 1), new Vector4(0.1f, 0.1f, 0.1f, 1f));
-            //lfGauge = new barGauge("CH4", 0, new Vector2(0.2f, 0.15f), new Vector2(0.1f, 0.05f), new Vector4(0.35f, 0.35f, 0.35f, 1), new Vector4(1, 1, 1, 1), new Vector4(0.1f, 0.1f, 0.1f, 1f));
-            //barGauges.Add(lfGauge);
-            //barGauges.Add(oxGauge);
-
-            //speedGauge = new circleGauge("m/s", "Speed", 0, 320, 0, 1, new Vector2(0.05f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
-            //throttleGauge = new circleGauge("%", "Throttle", 0, 100, 0, 0, new Vector2(0.15f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
-            //machGauge = new circleGauge("M", "Mach", 0, 3, 0, 3, new Vector2(0.25f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
-            //gGauge = new circleGauge("G", "G-Forces", 0, 5, 0, 3, new Vector2(0.95f, 0.45f), new Vector2(0.4f, 0.4f), new Vector4(255, 255, 255, 1));
+            canvasRect.sizeDelta = new Vector2(Settings.OverlaySize.x, Settings.OverlaySize.y); // Match render texture size
 
             UIs = Settings.LoadUIs();
             setActiveUI(UIs.First());
@@ -204,81 +207,10 @@ namespace CustomOverlay
             RenderTexture.active = null;
         }
 
-
-        //public List<Vector2> circleSymetrie(Vector2 midPoint, float size, float startDegreeOffset, int count)
-        //{
-        //    int degreeOffset = 360 / count;
-
-        //    List<Vector2> points = new List<Vector2>();
-        //    size /= 2;
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        points.Add(new Vector2((float)(size * Math.Sin((degreeOffset * i + startDegreeOffset) * 0.01745329252f) * overlaySize.y / overlaySize.x) + midPoint.x, (float)(size * Math.Cos((degreeOffset * i + startDegreeOffset) * 0.01745329252f)) + midPoint.y));
-        //    }
-
-        //    return points;
-        //}
-
         void Update()
         {
-            //speedGauge.Upddate((float)FlightGlobals.ActiveVessel.speed);
-            //throttleGauge.Upddate(FlightGlobals.ActiveVessel.ctrlState.mainThrottle * 100);
-            //machGauge.Upddate((float)FlightGlobals.ActiveVessel.mach);
-            //gGauge.Upddate((float)FlightGlobals.ActiveVessel.geeForce);
-            //gGauge.Max = Math.Max(gGauge.Max, (float)FlightGlobals.ActiveVessel.geeForce);
-
-            //if (rsList.ContainsKey(PartResourceLibrary.Instance.GetDefinition("Oxidizer").id))
-            //{
-            //    oxGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("Oxidizer").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("Oxidizer").id].MaxAmountValue);
-            //}
-
-            //if (rsList.ContainsKey(PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id))
-            //{
-            //    lfGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id].MaxAmountValue);
-            //}
-
-            //if (rsList.ContainsKey(PartResourceLibrary.Instance.GetDefinition("LqdMethane").id))
-            //{
-            //    lfGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("LqdMethane").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("LqdMethane").id].MaxAmountValue);
-            //}
-
-            //lfGauge.Percent = (float)(rsList[PartResourceLibrary.Instance.GetDefinition("LqdMethane").id].AmountValue / rsList[PartResourceLibrary.Instance.GetDefinition("LqdMethane").id].MaxAmountValue);
-
-
-
             if (Settings.ShowCustomUI)
             {
-
-                //if (FlightGlobals.ActiveVessel.ActionGroups[KSPActionGroup.Custom10])
-                //{
-                //    innerCircles.ForEach(c => c.size.y = 0.045f);
-                //}
-                //else
-                //{
-                //    innerCircles.ForEach(c => c.size.y = 0.0f);
-                //}
-
-                //if (FlightGlobals.ActiveVessel.ActionGroups[KSPActionGroup.Custom09])
-                //{
-                //    middleCircles.ForEach(c => c.size.y = 0.045f);
-                //}
-                //else
-                //{
-                //    middleCircles.ForEach(c => c.size.y = 0.0f);
-                //}
-
-                //if (FlightGlobals.ActiveVessel.ActionGroups[KSPActionGroup.Custom08])
-                //{
-                //    outerCircles.ForEach(c => c.size.y = 0.045f);
-                //}
-                //else
-                //{
-                //    outerCircles.ForEach(c => c.size.y = 0.0f);
-                //}
-
-                //speedValue.text = $"{Math.Round(FlightGlobals.ActiveVessel.speed * 3.6)} KM/H";
-                //altitudeValue.text = $"{Math.Floor(FlightGlobals.ActiveVessel.altitude / 1000)} KM";
-                //timeText.text = $"T+{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 3600)).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime / 60) % 60).ToString("D2")}:{Convert.ToInt32(Math.Floor(FlightGlobals.ActiveVessel.missionTime) % 60).ToString("D2")}";
                 ResourceManager.update();
 
                 activeUI.Update();
@@ -325,10 +257,8 @@ namespace CustomOverlay
 
         void OnGUI()
         {
-            GUI.DrawTexture(new Rect(Settings.ScreenSize.x - Settings.OverlaySize.x, Settings.ScreenSize.y - Settings.OverlaySize.y, Settings.OverlaySize.x, Settings.OverlaySize.y), renderTexture, ScaleMode.ScaleToFit, true);
+            GUI.DrawTexture(new Rect(Settings.ScreenSize.x - Settings.OverlaySize.x, Settings.ScreenSize.y - Settings.OverlaySize.y, Settings.OverlaySize.x, Settings.OverlaySize.y), renderTexture, ScaleMode.ScaleAndCrop, true);
         }
-
-        //void RenderText(string text)
 
         public static UrlDir.UrlConfig[] GetConfigsByName(string name)
         {
