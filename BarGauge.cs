@@ -25,7 +25,7 @@ namespace CustomOverlay
         public float Percent { get { return value / maxValue; } set { this.value = maxValue * value; } }
 
         public Vector2 primaryPosition { get { return new Vector2(position.x - size.x / 2.0f + (size.x * Percent) / 2.0f, position.y); } }
-        public Vector2 primarySize { get { return new Vector2(size.x * Percent, size.y - 0.02f); } }
+        public Vector2 primarySize { get { return new Vector2(size.x * Percent, size.y); } }
 
         public Vector2 Position { get { return position; } }
         public Vector2 Size { get { return size; } }
@@ -34,8 +34,11 @@ namespace CustomOverlay
         public Vector4 EndColor { get { return endColor; } }
         public Vector4 BackgroundColor { get { return backgroundColor; } }
 
-        public float Rounding { get { return Percent > 0.2f ? 0.16f : 0.2f; } }
-        public float thickness { get { return Percent > 0.2f ? 0.02f : 0.2f; } }
+        //public float Rounding { get { return Percent > 0.2f ? 0.16f : 0.2f; } }
+        //public float thickness { get { return Percent > 0.2f ? 0.02f : 0.2f; } }
+
+        public float Rounding { get { return 0.01f; } }
+        public float thickness { get { return 0.01f; } }
 
         public void updateValue()
         {

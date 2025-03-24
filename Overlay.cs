@@ -1,13 +1,9 @@
-﻿using KSP.UI;
-using System;
+﻿using KSP.UI.Screens;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEngine;
-using KSP.UI.Screens;
-using System.IO;
-using ClickThroughFix;
 using ToolbarControl_NS;
+using UnityEngine;
 
 namespace CustomOverlay
 {
@@ -115,13 +111,13 @@ namespace CustomOverlay
             switch (alignment)
             {
                 case textAlignment.left:
-                    textRect.localPosition = new Vector2(position.x * Settings.OverlaySize.x - Settings.OverlaySize.x / 2 + tmp.preferredWidth * 12, position.y * Settings.OverlaySize.y - Settings.OverlaySize.y / 2);
+                    textRect.localPosition = new Vector2(position.x * Settings.OverlaySize.x - Settings.OverlaySize.x / 2 + tmp.preferredWidth * Settings.textSizeMultiplier, position.y * Settings.OverlaySize.y - Settings.OverlaySize.y / 2);
                     break;
                 case textAlignment.center:
                     textRect.localPosition = new Vector2(position.x * Settings.OverlaySize.x - Settings.OverlaySize.x / 2, position.y * Settings.OverlaySize.y - Settings.OverlaySize.y / 2);
                     break;
                 case textAlignment.right:
-                    textRect.localPosition = new Vector2(position.x * Settings.OverlaySize.x - Settings.OverlaySize.x / 2 - tmp.preferredWidth * 12, position.y * Settings.OverlaySize.y - Settings.OverlaySize.y / 2);
+                    textRect.localPosition = new Vector2(position.x * Settings.OverlaySize.x - Settings.OverlaySize.x / 2 - tmp.preferredWidth * Settings.textSizeMultiplier, position.y * Settings.OverlaySize.y - Settings.OverlaySize.y / 2);
                     break;
             }
 
@@ -224,7 +220,7 @@ namespace CustomOverlay
         //}
 
         void Update()
-        {            
+        {
             //speedGauge.Upddate((float)FlightGlobals.ActiveVessel.speed);
             //throttleGauge.Upddate(FlightGlobals.ActiveVessel.ctrlState.mainThrottle * 100);
             //machGauge.Upddate((float)FlightGlobals.ActiveVessel.mach);
@@ -329,7 +325,7 @@ namespace CustomOverlay
 
         void OnGUI()
         {
-            GUI.DrawTexture(new Rect(0, Settings.ScreenSize.y - Settings.OverlaySize.y, Settings.OverlaySize.x, Settings.OverlaySize.y), renderTexture, ScaleMode.ScaleToFit, true);
+            GUI.DrawTexture(new Rect(Settings.ScreenSize.x - Settings.OverlaySize.x, Settings.ScreenSize.y - Settings.OverlaySize.y, Settings.OverlaySize.x, Settings.OverlaySize.y), renderTexture, ScaleMode.ScaleToFit, true);
         }
 
         //void RenderText(string text)

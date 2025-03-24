@@ -12,8 +12,12 @@ namespace CustomOverlay
         {
             switch (s)
             {
+                case "throttle":
+                    return flightData.thottle;
                 case "airspeed":
                     return flightData.airspeed;
+                case "mach":
+                    return flightData.mach;
                 case "speed":
                     return flightData.speed;
                 case "horizontalSpeed":
@@ -30,6 +34,10 @@ namespace CustomOverlay
                     return flightData.periapsis;
                 case "currentG":
                     return flightData.currentG;
+                case "timeToAP":
+                    return flightData.timeToAP;
+                case "timeToPE":
+                    return flightData.timeToPE;
                 case "missionTime":
                     return flightData.missionTime;
                 case "missionTimeFormatted":
@@ -44,8 +52,12 @@ namespace CustomOverlay
         {
             switch (type)
             {
+                case flightData.thottle:
+                    return FlightGlobals.ActiveVessel.ctrlState.mainThrottle;
                 case flightData.airspeed:
                     return (float) FlightGlobals.ActiveVessel.indicatedAirSpeed;
+                case flightData.mach:
+                    return (float)FlightGlobals.ActiveVessel.mach;
                 case flightData.speed:
                     return (float) FlightGlobals.ActiveVessel.speed;
                 case flightData.horizontalSpeed:
@@ -62,6 +74,10 @@ namespace CustomOverlay
                     return (float)FlightGlobals.ActiveVessel.GetCurrentOrbit().ApR;
                 case flightData.currentG:
                     return (float)FlightGlobals.ActiveVessel.geeForce;
+                case flightData.timeToAP:
+                    return (float)FlightGlobals.ActiveVessel.orbit.timeToAp;
+                case flightData.timeToPE:
+                    return (float)FlightGlobals.ActiveVessel.orbit.timeToPe;
                 case flightData.missionTime:
                 case flightData.missionTimeFormatted:
                     return (float)FlightGlobals.ActiveVessel.missionTime;

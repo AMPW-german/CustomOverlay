@@ -16,7 +16,9 @@ namespace CustomOverlay
     public enum flightData
     {
         None,
+        thottle,
         airspeed,
+        mach,
         speed,
         horizontalSpeed,
         orbitalSpeed,
@@ -25,6 +27,8 @@ namespace CustomOverlay
         apoapsis,
         periapsis,
         currentG,
+        timeToAP,
+        timeToPE,
         missionTime,
         missionTimeFormatted,
     }

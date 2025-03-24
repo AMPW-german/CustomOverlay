@@ -22,18 +22,44 @@ namespace CustomOverlay
         {
             ScreenSize = new Vector2Int(GameSettings.SCREEN_RESOLUTION_WIDTH, GameSettings.SCREEN_RESOLUTION_HEIGHT);
 
-            ConfigNode[] nodes = GameDatabase.Instance.GetConfigNodes("CustomUISettings");
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/CustomUISettings.cfg";
+
+            ConfigNode node = ConfigNode.Load(path);
+            if ((node == null) || (node.GetNodes().Length == 0))
+            {
+                return;
+            }
+            ConfigNode[] Nodes = node.GetNodes();
+            ConfigNode[] nodes = Nodes[0].GetNodes("Layout");
+
 
             if ((nodes == null) || (nodes.Length == 0))
             {
                 return;
             }
 
-            int.TryParse(nodes[0].GetValue("UISizeX"), out int screenSizeX);
-            int.TryParse(nodes[0].GetValue("UISizeY"), out int screenSizeY);
-            OverlaySize = new Vector2Int(screenSizeX, screenSizeY);
+            int UISizeY = ScreenSize.y;
+            int UISizeX = ScreenSize.x;
+            if (nodes[0].HasValue("UISizeX"))
+            {
+                int.TryParse(nodes[0].GetValue("UISizeX"), out UISizeX);
+            }
+            if (nodes[0].HasValue("UISizeY"))
+            {
+                int.TryParse(nodes[0].GetValue("UISizeY"), out UISizeY);
+            }
+            if (nodes[0].HasValue("UIPercentX"))
+            {
+                UISizeX = (int) (float.Parse(nodes[0].GetValue("UIPercentX")) / 100.0f * ScreenSize.x);
+            }
+            if (nodes[0].HasValue("UIPercentY"))
+            {
+                UISizeY = (int)(float.Parse(nodes[0].GetValue("UIPercentY")) / 100.0f * ScreenSize.y);
+            }
+            OverlaySize = new Vector2Int(UISizeX, UISizeY);
 
             float.TryParse(nodes[0].GetValue("textSizeMultiplier"), out textSizeMultiplier);
+            textSizeMultiplier *= OverlaySize.y / 256f;
 
             loaded = true;
         }
