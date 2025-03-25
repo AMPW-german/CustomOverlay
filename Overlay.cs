@@ -54,15 +54,15 @@ namespace CustomOverlay
             string filePath = $"{KSPUtil.ApplicationRootPath}GameData/CustomOverlay/OverlayShader";
             if (Application.platform == RuntimePlatform.LinuxPlayer || (Application.platform == RuntimePlatform.WindowsPlayer && SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL")))
             {
-                filePath = filePath + "-linux.unity3d";
+                filePath += "-linux.unity3d";
             }
             else if (Application.platform == RuntimePlatform.WindowsPlayer)
             {
-                filePath = filePath + "-windows.unity3d";
+                filePath += "-windows.unity3d";
             }
             else if (Application.platform == RuntimePlatform.OSXPlayer)
             {
-                filePath = filePath + "-macosx.unity3d";
+                filePath += "-macosx.unity3d";
             }
             
             assetBundle = AssetBundle.LoadFromFile(filePath);
