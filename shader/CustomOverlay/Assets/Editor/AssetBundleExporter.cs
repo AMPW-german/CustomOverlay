@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using System.IO;
@@ -21,8 +21,8 @@ public class CreateAssetBundles
         }
 
         var opts = BuildAssetBundleOptions.DeterministicAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle;
-        BuildTarget[] platforms = { BuildTarget.StandaloneWindows };
-        string[] platformExts = { "-windows" };
+        BuildTarget[] platforms = { BuildTarget.StandaloneWindows, BuildTarget.StandaloneOSX, BuildTarget.StandaloneLinux64 };
+        string[] platformExts = { "-windows", "-macosx", "-linux" };
 
         for (var i = 0; i < platforms.Length; ++i)
         {
@@ -66,7 +66,7 @@ public class CreateAssetBundles
             // Set the main asset to the first shader, or null if no shaders are found
             Object mainAsset = shaderAssets.Count > 0 ? shaderAssets[0] : null;
 
-#pragma warning disable CS0618
+            #pragma warning disable CS0618
             BuildPipeline.BuildAssetBundle(mainAsset, shaderAssets.ToArray(), path.Replace(".unity3d", platformExts[i] + ".unity3d"), opts, platforms[i]);
         }
     }
