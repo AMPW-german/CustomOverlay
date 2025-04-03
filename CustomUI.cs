@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -34,6 +35,7 @@ namespace CustomOverlay
         public List<BarGauge> barGauges;
         public List<Text> texts;
         public List<TextMeshProUGUI> textMeshGUIs;
+        public List<picture> pictures;
 
         public void Update()
         {
@@ -42,7 +44,7 @@ namespace CustomOverlay
             barGauges.ForEach(gauge => gauge.updateValue());
             circles.ForEach(circle => circle.updateValue());
             texts.ForEach(text => text.updateValue());
-
+            pictures.ForEach(picture => picture.update());
         }
 
         public void GetCircleVectors(out Vector4[] vectorCircles, out Vector4[] circleFill, out Vector4[] colors)
@@ -136,7 +138,40 @@ namespace CustomOverlay
             }
         }
 
+        public Vector4[] GetPictureVectors()
+        {
+            Vector4[] vectorPictures = new Vector4[10];
 
+            for (int i = 0; i < pictures.Count; i++)
+            {
+                vectorPictures[i] = new Vector4(pictures[i].position.x * Settings.aspectRatio, pictures[i].position.y, pictures[i].size, pictures[i].radianRotation);
+            }
+            for (int i = pictures.Count; i < 10; i++)
+            {
+                vectorPictures[i] = new Vector4(0, 0, 0, 0);
+            }
+
+            return vectorPictures;
+        }
+
+        public void GetPictureSetupInfo(out Texture2D imageAtlas, out Vector4[] uvRects)
+        {
+            imageAtlas = new Texture2D(1, 1);
+            uvRects = new Vector4[10];
+
+            picture[] setupList = new picture[10];
+
+            for (int i = 0; i < pictures.Count; i++)
+            {
+                setupList[i] = pictures[i];
+            }
+            for (int i = pictures.Count; i < 10; i++)
+            {
+                setupList[i] = picture.getEmpty();
+            }
+
+            imageAtlas = picture.CreateAtlas(setupList.ToList(), out uvRects);
+        }
 
         public CustomUI()
         {
@@ -147,6 +182,7 @@ namespace CustomOverlay
             barGauges = new List<BarGauge> { };
             texts = new List<Text> { };
             textMeshGUIs = new List<TextMeshProUGUI> { };
+            pictures = new List<picture> { };
         }
     }
 }

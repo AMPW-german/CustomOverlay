@@ -79,6 +79,18 @@ namespace CustomOverlay
             float.TryParse(node.GetValue("positionX"), out float positionX);
             float.TryParse(node.GetValue("positionY"), out float positionY);
 
+            float colorR = 1;
+            float colorG = 1;
+            float colorB = 1;
+            float colorA = 1;
+
+            if (node.HasValue("colorR")) colorR = float.Parse(node.GetValue("colorR"));
+            if (node.HasValue("colorG")) colorG = float.Parse(node.GetValue("colorG"));
+            if (node.HasValue("colorB")) colorB = float.Parse(node.GetValue("colorB"));
+            if (node.HasValue("colorA")) colorA = float.Parse(node.GetValue("colorA"));
+
+            Color color = new Color(colorR, colorG, colorB, colorA);
+
             textAlignment alignment = textAlignment.center;
             switch (node.GetValue("alignment"))
             {
@@ -127,7 +139,7 @@ namespace CustomOverlay
             {
                 multiplier = 1;
             }
-            this.textInstance = Overlay.instance.CreateText(text, new Vector2(positionX, positionY), alignment, fontsize);
+            this.textInstance = Overlay.instance.CreateText(text, new Vector2(positionX, positionY), alignment, fontsize, color);
             instance.texts.Add(this);
             instance.textMeshGUIs.Add(this.textInstance);
         }

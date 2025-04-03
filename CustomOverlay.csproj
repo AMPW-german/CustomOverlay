@@ -52,6 +52,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\KSP-Test\GameData\kRPC\Google.Protobuf.dll</HintPath>
     </Reference>
+    <Reference Include="KerbalEngineer">
+      <HintPath>D:\KSP-Clouds-2\GameData\KerbalEngineer\KerbalEngineer.dll</HintPath>
+    </Reference>
     <Reference Include="KSPAssets">
       <HintPath>D:\KSP-Test\KSP_x64_Data\Managed\KSPAssets.dll</HintPath>
     </Reference>
@@ -89,6 +92,7 @@
     <Compile Include="CustomUI.cs" />
     <Compile Include="FlightDataManager.cs" />
     <Compile Include="Overlay.cs" />
+    <Compile Include="picture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="RegisterToolbar.cs" />

@@ -1,9 +1,13 @@
 ﻿using KSP.UI.Screens;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TMPro;
 using ToolbarControl_NS;
 using UnityEngine;
+using System;
+using UnityEngine.UI;
+using static AtlasSplitter;
 
 // Custom Overlay
 // This mod allows you to use fully functional UIs in KSP
@@ -51,6 +55,28 @@ namespace CustomOverlay
 
         protected void Awake()
         {
+            //foreach (var loadedAssembly in AssemblyLoader.loadedAssemblies)
+            //{
+            //    if (loadedAssembly.name == "KerbalEngineer")
+            //    {
+            //        var KERType = loadedAssembly.assembly.GetType("KerbalEngineer.Flight.Readouts.ReadoutLibrary");
+            //        MethodInfo res = KERType.GetMethod("GetReadout", BindingFlags.Public | BindingFlags.Static);
+                    
+            //        for (int i = 0; i < 100; i++)
+            //        {
+            //            Debug.Log($"KER Found");
+            //            Debug.Log($"Pitch: {res.Invoke(null, new object[1] { "Pitch" })} ");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        for (int i = 0; i < 100; i++)
+            //        {
+            //            Debug.Log($"KER not Found");
+            //        }
+            //    }
+            //}
+
             string filePath = $"{KSPUtil.ApplicationRootPath}GameData/CustomOverlay/OverlayShader";
             if (Application.platform == RuntimePlatform.LinuxPlayer || (Application.platform == RuntimePlatform.WindowsPlayer && SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL")))
             {
@@ -123,7 +149,7 @@ namespace CustomOverlay
         /// </summary>
         /// <param name="textLength">Only needed for aligment, needs to be manually checked</param>
         /// <returns></returns>
-        public TextMeshProUGUI CreateText(string text, Vector2 position, textAlignment alignment, float fontSize = 1)
+        public TextMeshProUGUI CreateText(string text, Vector2 position, textAlignment alignment, float fontSize = 1, Color? color = null)
         {
             GameObject textObj = new GameObject("TextMeshPro");
             textObj.transform.SetParent(GameObject.Find("Text Canvas").transform);
@@ -133,7 +159,8 @@ namespace CustomOverlay
             tmp.text = text;
             tmp.fontSize = fontSize;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = Color.white;
+
+            tmp.color = color != null ? (Color) color : Color.white;
 
             tmp.ForceMeshUpdate();
 
@@ -189,7 +216,6 @@ namespace CustomOverlay
             gaugeMaterial = new Material(gaugeShader);
             gaugeMaterial.SetFloat("_AspectRatio", Settings.OverlaySize.x / (float)Settings.OverlaySize.y);
 
-
             GameObject camObj = new GameObject("UI Render Camera");
             uiCamera = camObj.AddComponent<Camera>();
             uiCamera.orthographic = true;
@@ -213,6 +239,14 @@ namespace CustomOverlay
             UIs = Settings.LoadUIs();
             setActiveUI(UIs.First());
 
+            activeUI.GetPictureSetupInfo(out Texture2D imageAtlas, out Vector4[] uvRects);
+
+            gaugeMaterial.SetInt("_imageCount", activeUI.pictures.Count);
+            gaugeMaterial.SetTexture("_Atlas", imageAtlas);
+            gaugeMaterial.SetVectorArray("_UVRects", uvRects);
+            gaugeMaterial.SetVectorArray("_Transforms", activeUI.GetPictureVectors());
+
+
             RenderTexture.active = renderTexture;
             GL.Clear(true, true, new Color(0, 0, 0, 0.5f)); // Ensure transparency
 
@@ -226,7 +260,6 @@ namespace CustomOverlay
             if (Settings.ShowCustomUI)
             {
                 ResourceManager.update();
-
                 activeUI.Update();
 
                 activeUI.GetCircleVectors(out Vector4[] vectorCircles, out Vector4[] circleFill, out Vector4[] cirlceColors);
@@ -249,6 +282,8 @@ namespace CustomOverlay
                 gaugeMaterial.SetFloatArray("_barRounding", barRounding);
                 gaugeMaterial.SetFloatArray("_barThickness", barThickness);
 
+                gaugeMaterial.SetVectorArray("_Transforms", activeUI.GetPictureVectors());
+
                 uiCamera.enabled = true;
 
                 RenderTexture.active = renderTexture;
@@ -264,6 +299,7 @@ namespace CustomOverlay
 
                 RenderTexture.active = renderTexture;
                 GL.Clear(true, true, new Color(0, 0, 0, 0));
+                
 
                 RenderTexture.active = null;
             }

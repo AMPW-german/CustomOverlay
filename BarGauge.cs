@@ -29,7 +29,7 @@ namespace CustomOverlay
         public float maxValue { get; private set; }
         public string resourceType { get; private set; }
 
-
+        private bool valueOverride = false;
         private string name;
         private Vector2 position;
         private Vector2 size;
@@ -61,6 +61,8 @@ namespace CustomOverlay
 
         public void updateValue()
         {
+            if (valueOverride) { return; }
+
             if (Mode == valueMode.resource)
             {
                 value = (float)ResourceManager.getResource(PartResourceLibrary.Instance.GetDefinition(resourceType));
@@ -131,6 +133,13 @@ namespace CustomOverlay
             }
 
             value = 0;
+            if (node.HasValue("valueOverride"))
+            {
+                valueOverride = bool.Parse(node.GetValue("valueOverride"));
+                value = float.Parse(node.GetValue("value"));
+                maxValue = float.Parse(node.GetValue("maxValue"));
+            }
+
             float.TryParse(node.GetValue("positionX"), out position.x);
             float.TryParse(node.GetValue("positionY"), out position.y);
             float.TryParse(node.GetValue("sizeX"), out size.x);
@@ -151,7 +160,19 @@ namespace CustomOverlay
             float.TryParse(node.GetValue("bgColorB"), out backgroundColor.z);
             float.TryParse(node.GetValue("bgColorA"), out backgroundColor.w);
 
-            textMeshProUGUI = Overlay.instance.CreateText(name, new Vector2(position.x - size.x / 2.0f - 0.02f, position.y), textAlignment.left);
+            float colorR = 1;
+            float colorG = 1;
+            float colorB = 1;
+            float colorA = 1;
+
+            if (node.HasValue("colorR")) colorR = float.Parse(node.GetValue("colorR"));
+            if (node.HasValue("colorG")) colorG = float.Parse(node.GetValue("colorG"));
+            if (node.HasValue("colorB")) colorB = float.Parse(node.GetValue("colorB"));
+            if (node.HasValue("colorA")) colorA = float.Parse(node.GetValue("colorA"));
+
+            Color color = new Color(colorR, colorG, colorB, colorA);
+
+            textMeshProUGUI = Overlay.instance.CreateText(name, new Vector2(position.x - size.x / 2.0f - 0.02f, position.y), textAlignment.left, color: color);
 
             instance.textMeshGUIs.Add(textMeshProUGUI);
         }

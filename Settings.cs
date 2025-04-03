@@ -30,10 +30,12 @@ namespace CustomOverlay
         public static Vector2Int ScreenSize;
         public static Vector2Int OverlaySize;
         public static float textSizeMultiplier = 12.0f;
+        public static float aspectRatio = 1.0f;
 
         public static void Load()
         {
             ScreenSize = new Vector2Int(GameSettings.SCREEN_RESOLUTION_WIDTH, GameSettings.SCREEN_RESOLUTION_HEIGHT);
+            aspectRatio = (float)ScreenSize.x / (float)ScreenSize.y;
 
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/OverLaySettings.cfg";
 
@@ -124,6 +126,10 @@ namespace CustomOverlay
                 foreach (ConfigNode item in itemNode.GetNodes("circlesymetrie"))
                 {
                     new CircleSymetrie(layout, item);
+                }
+                foreach (ConfigNode item in itemNode.GetNodes("picture"))
+                {
+                    layout.pictures.Add(new picture(item));
                 }
 
                 UIs.Add(layout);

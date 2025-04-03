@@ -64,6 +64,11 @@ Shader "Unlit/OverlayShader"
             uniform float4 _barPosition[40]; //x, y, width, height
             uniform float _barRounding[40];
             uniform float _barThickness[40];
+            // images
+            uniform int _imageCount;
+            uniform sampler2D _Atlas;
+            uniform float4 _Transforms[10]; // x = posX, y = posY, z = scale, w = rotation (radians)
+            uniform float4 _UVRects[10]; // UV coordinates for each image in the atlas
 
             uniform float _AspectRatio;
 
@@ -74,6 +79,28 @@ Shader "Unlit/OverlayShader"
                 o.uv = v.uv;
                 return o;
             }
+
+            float2x2 rotate (float angle)
+            {
+                return float2x2(cos(angle), -sin(angle), sin(angle), cos(angle));
+            }
+
+            float4 calculateImageColor(float2 uv)
+            {
+                float4 finalColor = float4(0, 0, 0, 0);
+                for (int j = 0; j < _imageCount; j++)
+                {
+
+                }
+            }
+
+            // calculates the correct color for the current uv coordinate based on a provided image
+            float2 rotateUV(float2 uv, float angle) {
+                float s = sin(angle);
+                float c = cos(angle);
+                return mul(float2x2(c, -s, s, c), uv - 0.5) + 0.5; // Rotate around center
+            }
+
 
             float roundedRectangle (float2 currentXY, float2 pos, float2 size, float radius, float thickness)
             {
@@ -162,7 +189,25 @@ Shader "Unlit/OverlayShader"
                     }
                 }
 
-                return tex2D(_MainTex, i.uv) * finalColor;
+                // Images
+                if (all(finalColor == float4(0, 0, 0, 0)))
+                {
+                    for (int j = 0; j < _imageCount; j++)
+                    {
+                        float2 uv2 = uv - _Transforms[j].xy + (_Transforms[j].z / 2.0); // Translate UV to image position
+                        // uv.x /= _AspectRatio;
+
+                        uv2 /= _Transforms[j].z; // Scale
+                        uv2 = rotateUV(uv2, _Transforms[j].w); // Rotate
+        
+                        if (uv2.x >= 0 && uv2.x <= 1 && uv2.y >= 0 && uv2.y <= 1) {
+                            float2 atlasUV = lerp(_UVRects[j].xy, _UVRects[j].zw, uv2);
+                            finalColor = tex2D(_Atlas, atlasUV);
+                        }
+                    }
+                }
+
+                return finalColor;
                 }
             ENDCG
         }

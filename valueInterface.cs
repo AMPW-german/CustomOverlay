@@ -27,7 +27,7 @@ namespace CustomOverlay
     public enum flightData
     {
         None,
-        thottle,
+        throttle,
         airspeed,
         mach,
         speed,
