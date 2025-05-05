@@ -66,7 +66,7 @@ namespace CustomOverlay
             switch (type)
             {
                 case flightData.throttle:
-                    return FlightGlobals.ActiveVessel.ctrlState.mainThrottle;
+                    return FlightGlobals.ActiveVessel.ctrlState.mainThrottle * 100;
                 case flightData.airspeed:
                     return (float)FlightGlobals.ActiveVessel.indicatedAirSpeed;
                 case flightData.mach:
