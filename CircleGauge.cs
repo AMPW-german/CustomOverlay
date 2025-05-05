@@ -150,8 +150,8 @@ namespace CustomOverlay
 
         private void create()
         {
-            valueTextMesh = Overlay.instance.CreateText($"{Math.Round(current, decimals)}{unitName}", new Vector2(position.x, position.y), textAlignment.center, 1.4f * size);
-            descTextMesh = Overlay.instance.CreateText($"{text}", new Vector2(position.x, position.y - 0.3f), textAlignment.center, 1.1f * size);
+            valueTextMesh = Overlay.instance.CreateText($"{Math.Round(current, decimals)}{unitName}", new Vector2(position.x, position.y), textAlignment.center, 2.8f * size);
+            descTextMesh = Overlay.instance.CreateText($"{text}", new Vector2(position.x, position.y - 0.6f * size), textAlignment.center, 2.2f * size);
 
             innerCircle = new Circle(position, new Vector2(size * 0.9f, size * 0.75f), color, 50, 310, Math.Min(current / maxValue, 1) * 360);
             outerCircle = new Circle(position, new Vector2(size, size * 0.95f), color, 50, 310, 360);
