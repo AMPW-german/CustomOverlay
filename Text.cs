@@ -123,22 +123,13 @@ namespace CustomOverlay
                 Mode = valueMode.flightData;
                 FlightData = FlightDataManager.stringToValue(node.GetValue("source"));
             }
-            if (node.HasValue("decimals"))
-            {
-                decimals = int.Parse(node.GetValue("decimals"));
-            }
-            else
-            {
-                decimals = 0;
-            }
-            if (node.HasValue("multiplier"))
-            {
-                multiplier = float.Parse(node.GetValue("multiplier"));
-            }
-            else
-            {
-                multiplier = 1;
-            }
+
+            if (node.HasValue("decimals")) decimals = int.Parse(node.GetValue("decimals"));
+            else decimals = 0;
+
+            if (node.HasValue("multiplier")) multiplier = float.Parse(node.GetValue("multiplier"));
+            else multiplier = 1;
+
             this.textInstance = Overlay.instance.CreateText(text, new Vector2(positionX, positionY), alignment, fontsize, color);
             instance.texts.Add(this);
             instance.textMeshGUIs.Add(this.textInstance);

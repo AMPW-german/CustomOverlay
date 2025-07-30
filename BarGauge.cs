@@ -27,6 +27,7 @@ namespace CustomOverlay
         public bool autoScale { get; private set; }
         public float value { get; private set; }
         public float maxValue { get; private set; }
+        public float multiplier { get; private set; } = 1f;
         public string resourceType { get; private set; }
 
         private bool valueOverride = false;
@@ -65,18 +66,15 @@ namespace CustomOverlay
 
             if (Mode == valueMode.resource)
             {
-                value = (float)ResourceManager.getResource(PartResourceLibrary.Instance.GetDefinition(resourceType));
-                maxValue = (float)ResourceManager.getResourceMax(PartResourceLibrary.Instance.GetDefinition(resourceType));
+                value = (float)ResourceManager.getResource(PartResourceLibrary.Instance.GetDefinition(resourceType)) * multiplier;
+                maxValue = (float)ResourceManager.getResourceMax(PartResourceLibrary.Instance.GetDefinition(resourceType)) * multiplier;
             }
             else
             {
                 if (FlightData == flightData.None || FlightData == flightData.missionTime || FlightData == flightData.missionTimeFormatted) { return; }
-                value = FlightDataManager.FlightData(FlightData);
+                value = FlightDataManager.FlightData(FlightData) * multiplier;
 
-                if (autoScale && value > maxValue)
-                {
-                    maxValue = value;
-                }
+                if (autoScale && value > maxValue) maxValue = value;
             }
         }
 
@@ -131,6 +129,9 @@ namespace CustomOverlay
                 float.TryParse(node.GetValue("maximum"), out float tempMax);
                 maxValue = tempMax;
             }
+
+            if (node.HasValue("multiplier")) multiplier = float.Parse(node.GetValue("multiplier"));
+            else multiplier = 1;
 
             value = 0;
             if (node.HasValue("valueOverride"))
