@@ -307,7 +307,7 @@ namespace CustomOverlay
 
         void OnGUI()
         {
-            GUI.DrawTexture(new Rect(Settings.ScreenSize.x - Settings.OverlaySize.x, Settings.ScreenSize.y - Settings.OverlaySize.y, Settings.OverlaySize.x, Settings.OverlaySize.y), renderTexture, ScaleMode.ScaleAndCrop, true);
+            GUI.DrawTexture(new Rect(Settings.ScreenSize.x / 2 - Settings.OverlaySize.x / 2 + Settings.OverlayOffset.x, Settings.ScreenSize.y - Settings.OverlaySize.y - Settings.OverlayOffset.y, Settings.OverlaySize.x, Settings.OverlaySize.y), renderTexture, ScaleMode.ScaleAndCrop, true);
         }
 
         public static UrlDir.UrlConfig[] GetConfigsByName(string name)

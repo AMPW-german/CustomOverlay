@@ -29,6 +29,7 @@ namespace CustomOverlay
         public static bool loaded = false;
         public static Vector2Int ScreenSize;
         public static Vector2Int OverlaySize;
+        public static Vector2Int OverlayOffset;
         public static float textSizeMultiplier = 12.0f;
         public static float aspectRatio = 1.0f;
 
@@ -70,6 +71,28 @@ namespace CustomOverlay
                 UISizeY = (int)(float.Parse(nodes[0].GetValue("UIPercentY")) / 100.0f * ScreenSize.y);
             }
             OverlaySize = new Vector2Int(UISizeX, UISizeY);
+
+
+            int UIOffsetX = 0;
+            int UIOffsetY = 0;
+            if (nodes[0].HasValue("UIOffsetX"))
+            {
+                int.TryParse(nodes[0].GetValue("UIOffsetX"), out UIOffsetX);
+            }
+            if (nodes[0].HasValue("UIOffsetY"))
+            {
+                int.TryParse(nodes[0].GetValue("UIOffsetY"), out UIOffsetY);
+            }
+            if (nodes[0].HasValue("UIOffsetPercentX"))
+            {
+                UIOffsetX = (int)(float.Parse(nodes[0].GetValue("UIOffsetPercentX")) / 100.0f * ScreenSize.x);
+            }
+            if (nodes[0].HasValue("UIOffsetPercentY"))
+            {
+                UIOffsetY = (int)(float.Parse(nodes[0].GetValue("UIOffsetPercentY")) / 100.0f * ScreenSize.y);
+            }
+            OverlayOffset = new Vector2Int(UIOffsetX, UIOffsetY);
+
 
             float.TryParse(nodes[0].GetValue("textSizeMultiplier"), out textSizeMultiplier);
             textSizeMultiplier *= OverlaySize.y / 256f;
