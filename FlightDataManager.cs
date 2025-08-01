@@ -80,7 +80,7 @@ namespace CustomOverlay
                 case flightData.altitude_asl:
                     return (float)FlightGlobals.ActiveVessel.altitude;
                 case flightData.altitude:
-                    return (float)FlightGlobals.ActiveVessel.terrainAltitude;
+                    return (float)FlightGlobals.ActiveVessel.radarAltitude;
                 case flightData.apoapsis:
                     return (float)FlightGlobals.ActiveVessel.GetCurrentOrbit().ApA;
                 case flightData.periapsis:
