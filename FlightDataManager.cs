@@ -55,6 +55,8 @@ namespace CustomOverlay
                     return flightData.missionTime;
                 case "missionTimeFormatted":
                     return flightData.missionTimeFormatted;
+                case "heading":
+                    return flightData.heading;
                 case "None":
                 default:
                     return flightData.None;
@@ -96,6 +98,8 @@ namespace CustomOverlay
                 case flightData.missionTime:
                 case flightData.missionTimeFormatted:
                     return (float)FlightGlobals.ActiveVessel.missionTime;
+                case flightData.heading:
+                    return FlightGlobals.ship_heading;
                 case flightData.None:
                 default:
                     return -1;

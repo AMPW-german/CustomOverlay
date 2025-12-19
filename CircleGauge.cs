@@ -67,7 +67,7 @@ namespace CustomOverlay
             if (disabled) { return; }
             current = value;
             innerCircle.degree = Math.Min(current / maxValue, 1) * 360;
-            valueTextMesh.text = $"{Math.Round(Mode == valueMode.resource ? current / maxValue * 100 : current, decimals)}{unitName}";
+            valueTextMesh.text = $"{(Mode == valueMode.resource ? current / maxValue * 100 : current).ToString($"F{decimals}")}{unitName}";
         }
 
         public void disable()
@@ -97,7 +97,7 @@ namespace CustomOverlay
         {
             disabled = false;
 
-            valueTextMesh.text = $"{Math.Round(current, decimals)}{unitName}";
+            valueTextMesh.text = $"{current.ToString($"F{decimals}")}{unitName}";
             descTextMesh.text = text;
 
             valueTextMesh.color = color;

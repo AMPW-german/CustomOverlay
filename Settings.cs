@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Unity.Jobs;
 using UnityEngine;
 
 // Custom Overlay
@@ -32,6 +34,7 @@ namespace CustomOverlay
         public static Vector2Int OverlayOffset;
         public static float textSizeMultiplier = 12.0f;
         public static float aspectRatio = 1.0f;
+        public static KeyCode hotKey = KeyCode.None;
 
         public static void Load()
         {
@@ -96,6 +99,11 @@ namespace CustomOverlay
 
             float.TryParse(nodes[0].GetValue("textSizeMultiplier"), out textSizeMultiplier);
             textSizeMultiplier *= OverlaySize.y / 256f;
+
+            if (nodes[0].HasValue("hotkey"))
+            {
+                if (Enum.TryParse(nodes[0].GetValue("hotkey"), true, out KeyCode hotkey)) hotKey = hotkey;
+            }
 
             loaded = true;
         }

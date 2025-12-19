@@ -44,6 +44,7 @@ namespace CustomOverlay
         timeToPEFormatted,
         missionTime,
         missionTimeFormatted,
+        heading,
     }
 
     public interface valueInterface

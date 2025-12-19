@@ -31,6 +31,8 @@ namespace CustomOverlay
                     (float)tex.width / atlasSizeX, // xMax
                     (float)(yOffset + tex.height) / atlasSizeY // yMax
                 );
+
+                yOffset += tex.height;
             }
 
             atlas.Apply();
@@ -48,6 +50,8 @@ namespace CustomOverlay
             None,
             rotationX,
             rotationY,
+            Pitch,
+            heading,
         }
 
         public pictureMode mode;
@@ -62,31 +66,39 @@ namespace CustomOverlay
         /// </summary>
         public void update()
         {
-            if (mode == pictureMode.rotationX)
+            Quaternion surfaceRotation = GetSurfaceRotation(FlightGlobals.ActiveVessel);
+            float pitch = 0;
+            switch (mode)
             {
-                Quaternion surfaceRotation = GetSurfaceRotation(FlightGlobals.ActiveVessel);
-                float pitch = (surfaceRotation.eulerAngles.x > 180.0f
-                ? 360.0f - surfaceRotation.eulerAngles.x
-                : -surfaceRotation.eulerAngles.x);
-                rotation = ((surfaceRotation.eulerAngles.y < 180 ?
-                - pitch
-                     :
-                180 + pitch
-                ) + 90) % 360; // The image is -90° rotated
+                case pictureMode.rotationX:
+                    pitch = (surfaceRotation.eulerAngles.x > 180.0f
+                    ? 360.0f - surfaceRotation.eulerAngles.x
+                    : -surfaceRotation.eulerAngles.x);
+                    rotation = ((surfaceRotation.eulerAngles.y < 180 ?
+                    -pitch
+                         :
+                    180 + pitch
+                    ) + 90) % 360; // The image is -90° rotated
+                    break;
+                case pictureMode.rotationY:
+                    surfaceRotation = GetSurfaceRotation(FlightGlobals.ActiveVessel);
+                    pitch = (surfaceRotation.eulerAngles.x < 90 || surfaceRotation.eulerAngles.x > 270
+                    ? 360.0f - surfaceRotation.eulerAngles.x
+                    : -surfaceRotation.eulerAngles.x);
+                    rotation = ((surfaceRotation.eulerAngles.y < 180 ?
+                    -pitch
+                         :
+                    180 + pitch
+                    ) + 90) % 360; // The image is -90° rotated
+                    break;
+                case pictureMode.Pitch:
+                    rotation = (surfaceRotation.eulerAngles.x + 90) % 360;
+                    break;
+                case pictureMode.heading:
+                    rotation = FlightDataManager.FlightData(flightData.heading);
+                    break;
+                    //case pictureMode.Orientation:
 
-            }
-            else if ( mode == pictureMode.rotationY)
-            {
-
-                Quaternion surfaceRotation = GetSurfaceRotation(FlightGlobals.ActiveVessel);
-                float pitch = (surfaceRotation.eulerAngles.x < 90 || surfaceRotation.eulerAngles.x > 270
-                ? 360.0f - surfaceRotation.eulerAngles.x
-                : -surfaceRotation.eulerAngles.x);
-                rotation = ((surfaceRotation.eulerAngles.y < 180 ?
-                -pitch
-                     :
-                180 + pitch
-                ) + 90) % 360; // The image is -90° rotated
             }
         }
 
@@ -122,20 +134,6 @@ namespace CustomOverlay
             this.img.Apply();
         }
 
-        public picture(string path, Vector2 position, float size, float rotation)
-        {
-            this.path = path;
-            this.position = position;
-            this.size = size;
-            this.rotation = rotation;
-            if (File.Exists(path))
-            {
-                img = new Texture2D(2, 2);
-                img.LoadImage(File.ReadAllBytes(path));
-                img.Apply();
-            }
-        }
-
         public picture(ConfigNode node)
         {
             path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/" + node.GetValue("path");
@@ -145,16 +143,25 @@ namespace CustomOverlay
             if (node.HasValue("mode"))
             {
                 string modeText = node.GetValue("mode");
-                if (modeText == "rotationX")
-                {
-                    mode = pictureMode.rotationX;
-                }
-                else if (modeText == "rotationY")
-                {
-                    mode = pictureMode.rotationY;
-                }
-                else mode = pictureMode.None;
 
+                switch (modeText)
+                {
+                    case "rotationX":
+                        mode = pictureMode.rotationX;
+                        break;
+                    case "rotationY":
+                        mode = pictureMode.rotationY;
+                        break;
+                    case "Pitch":
+                        mode = pictureMode.Pitch;
+                        break;
+                    case "heading":
+                        mode = pictureMode.heading;
+                        break;
+                    default:
+                        mode = pictureMode.None;
+                        break;
+                }
             }
             else
             {

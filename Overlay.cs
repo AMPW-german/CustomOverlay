@@ -137,6 +137,7 @@ namespace CustomOverlay
         public void showUi()
         {
             Settings.ShowCustomUI = false;
+            //FlightGlobals.ActiveVessel.rootPart.GetConnectedResourceTotals(PartResourceLibrary.Instance.GetDefinition("LiquidFuel").id, ResourceFlowMode.STAGE_PRIORITY_FLOW_BALANCE)
         }
 
         public void hideUI()
@@ -189,6 +190,13 @@ namespace CustomOverlay
             UIs.Where(u => u != ui).ToList().ForEach(u => u.textMeshGUIs.ForEach(t => t.alpha = 0));
             ui.textMeshGUIs.ForEach(t => t.alpha = 1);
             activeUI = ui;
+
+            activeUI.GetPictureSetupInfo(out Texture2D imageAtlas, out Vector4[] uvRects);
+
+            gaugeMaterial.SetInt("_imageCount", activeUI.pictures.Count);
+            gaugeMaterial.SetTexture("_Atlas", imageAtlas);
+            gaugeMaterial.SetVectorArray("_UVRects", uvRects);
+            gaugeMaterial.SetVectorArray("_Transforms", activeUI.GetPictureVectors());
         }
 
         public void reload()
@@ -257,6 +265,8 @@ namespace CustomOverlay
 
         void Update()
         {
+            if (Input.GetKeyUp(Settings.hotKey)) Settings.ShowCustomUI = !Settings.ShowCustomUI;
+
             if (Settings.ShowCustomUI)
             {
                 ResourceManager.update();
