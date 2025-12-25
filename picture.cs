@@ -152,7 +152,7 @@ namespace CustomOverlay
                     case "rotationY":
                         mode = pictureMode.rotationY;
                         break;
-                    case "Pitch":
+                    case "pitch":
                         mode = pictureMode.Pitch;
                         break;
                     case "heading":

@@ -144,7 +144,7 @@ namespace CustomOverlay
 
             for (int i = 0; i < pictures.Count; i++)
             {
-                vectorPictures[i] = new Vector4(pictures[i].position.x * Settings.aspectRatio, pictures[i].position.y, pictures[i].size, pictures[i].radianRotation);
+                vectorPictures[i] = new Vector4(pictures[i].position.x * ((float) Settings.OverlaySize.x / Settings.OverlaySize.y), pictures[i].position.y, pictures[i].size, pictures[i].radianRotation);
             }
             for (int i = pictures.Count; i < 10; i++)
             {
